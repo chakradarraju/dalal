@@ -97,59 +97,26 @@ function trade($fromId,$toId,$stockId,$num,$value) {
 	$toNum += $num;
 	$query = <<<QUERY
 START TRANSACTION;
-UPDATE `users` SET `cashInHand` = '{$fromCash}' WHERE `userId` = '{$fromId}';
-UPDATE `users` SET `cashInHand` = '{$toCash}' WHERE `userId` = '{$toId}';
-UPDATE `holding` SET `num` = '{$fromNum}' WHERE `userId` = '{$fromId}' AND `stockId` = '{$stockId}';
-UPDATE `holding` SET `num` = '{$toNum}' WHERE `userId` = '{$toId}' AND `stockId` = '{$stockId}';
-UPDATE `stock` SET `p1` = `p2`, `p2` = `p3`, `p3` = `p4`, `p4` = `p5`, `p5` = '{$tradeValue}' WHERE `stockId` = '{$stockId}';
+UPDATE `users_data` SET `value` = '{$fromCash}' WHERE `userId` = '{$fromId}' AND `key` = 'cashInHand';
+UPDATE `users_data` SET `value` = '{$toCash}' WHERE `userId` = '{$toId}' AND `key` = 'cashInHand';
+UPDATE `users_data` SET `value` = '{$fromNum}' WHERE `userId` = '{$fromId}' AND `key` = '{$stockId}';
+UPDATE `users_data` SET `value` = '{$toNum}' WHERE `userId` = '{$toId}' AND `key` = '{$stockId}';
+UPDATE `stocks` SET `p1` = `p2`, `p2` = `p3`, `p3` = `p4`, `p4` = `p5`, `p5` = '{$tradeValue}' WHERE `stockId` = '{$stockId}';
 INSERT INTO `log` VALUES('{$fromId}','{$toId}','{$stockId}','{$num}','{$value}');
-INSERT INTO `values`
-	SELECT 'stock_{$stockId}', NOW(), '{$value}' FROM `values`
+INSERT INTO `stocks_data`
+	SELECT '{$stockId}', NOW(), 'graph_point', '{$value}' FROM `stocks_data`
 	WHERE NOT EXISTS (
-		SELECT * FROM `values` WHERE `key` = 'stock_{$stockId}' AND `time` > NOW() - INTERVAL {$interval}
+		SELECT * FROM `stocks_data` WHERE `stockId` = '{$stockId}' AND `key` = 'graph_point' AND `time` > NOW() - INTERVAL {$interval}
 	)
-INSERT INTO `values`
-    SELECT 'index', NOW(), SUM((`p1`+`p2`+`p3`+`p4`+`p5`)/5*`factor`) FROM `stock`
+INSERT INTO `misc_data`
+    SELECT NOW(), 'index', SUM((`p1`+`p2`+`p3`+`p4`+`p5`)/5*`factor`) FROM `stocks`
     WHERE NOT EXISTS (
-        SELECT * FROM `values` WHERE `key` = 'index' AND `time` > NOW() - INTERVAL {$interval}
+        SELECT * FROM `misc_data` WHERE `key` = 'index' AND `time` > NOW() - INTERVAL {$interval}
     )
 COMMIT;
 QUERY;
 	if(!mysql_query($query)) return -1;
 	return 1;
-}
-
-/**
- * function sharesInHand(userId,stockId)
- * uses "holding" table to return the number of stocks held by given user
- * return -1 in case of any error
- **/
-function sharesInHand($userId,$stockId) {
-	$query = "SELECT `num` FROM `holding` WHERE `userId` = '{$userId}' AND `stockId` = '{$stockId}'";
-	$result = mysql_query($query);
-	if(!$result) return -1;
-	if(mysql_num_rows($result)==0) {
-		$insQuery = "INSERT INTO `holding` VALUES('{$userId}','{$stockId}','0')";
-		if(!mysql_query($insQuery)) return -1;
-		return 0;
-	}
-	$row = mysql_fetch_assoc($result);
-	return $row['num'];
-}
-
-/**
- * function getMovingAverage(stockId)
- * returns the moving average of the given stock(stockId)
- * moving average is the average of previous 5 traded values of the stock
- **/
-function getMovingAverage($stockId) {
-	$query = "SELECT * FROM `stock` WHERE `stockId` = '{$stockId}'";
-	$result = mysql_query($query);
-	if(!$result) return -1;
-	if($row = mysql_fetch_assoc($result)) {
-		return ($row['p1']+$row['p2']+$row['p3']+$row['p4']+$row['p5'])/5;
-	}
-	return -1;
 }
 
 ?>

@@ -8,4 +8,5 @@ define("MYSQL_DATABASE","dalal");
 define("CASH_IN_HAND","500000");
 
 define("UPDATE_INTERVAL","5 MINUTE");
+define("GRAPH_SPAN","24 HOUR");
 ?>

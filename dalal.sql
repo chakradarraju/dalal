@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 19, 2012 at 02:31 AM
+-- Generation Time: Jan 19, 2012 at 07:09 AM
 -- Server version: 5.1.58
 -- PHP Version: 5.3.6-13ubuntu3.3
 
@@ -36,13 +36,13 @@ CREATE TABLE IF NOT EXISTS `buy` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `holding`
+-- Table structure for table `misc_data`
 --
 
-CREATE TABLE IF NOT EXISTS `holding` (
-  `userId` int(11) NOT NULL,
-  `stockId` int(11) NOT NULL,
-  `num` int(11) NOT NULL
+CREATE TABLE IF NOT EXISTS `misc_data` (
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `key` varchar(100) NOT NULL,
+  `value` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS `sell` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `stock`
+-- Table structure for table `stocks`
 --
 
-CREATE TABLE IF NOT EXISTS `stock` (
+CREATE TABLE IF NOT EXISTS `stocks` (
   `stockId` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
   `p1` int(11) NOT NULL,
@@ -80,13 +80,14 @@ CREATE TABLE IF NOT EXISTS `stock` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `updTime`
+-- Table structure for table `stocks_data`
 --
 
-CREATE TABLE IF NOT EXISTS `updTime` (
-  `key` varchar(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `stocks_data` (
+  `stockId` int(11) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `value` varchar(100) NOT NULL
+  `key` varchar(100) NOT NULL,
+  `value` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -99,9 +100,21 @@ CREATE TABLE IF NOT EXISTS `users` (
   `userId` int(11) NOT NULL AUTO_INCREMENT,
   `userName` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
-  `cashInHand` int(11) NOT NULL,
   PRIMARY KEY (`userId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users_data`
+--
+
+CREATE TABLE IF NOT EXISTS `users_data` (
+  `userId` int(11) NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `key` varchar(100) NOT NULL,
+  `value` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

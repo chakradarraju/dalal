@@ -3,17 +3,15 @@
 require_once("db.php");
 
 function register($userName,$password) {
-//	$userName = mysql_real_escape_string($userName);
-//	$password = mysql_real_escape_string($password);
 	$query = "SELECT `userName` from `users` where `userName` = '{$userName}`";
 	$result = mysql_query($query) or die($query);
 	if(!mysql_fetch_assoc($result)) {
 		$password = md5($password);
-		$query = "INSERT INTO `users` VALUES('{$userName}','{$password}')";
+		$query = "INSERT INTO `users` VALUES(NULL,'{$userName}','{$password}')";
 		$result = mysql_query($query) or die($query);
-		if(!$result) return "Error in registering user, Try after some time.";
-		else return "User successfully registered";
-	} else return "User with {$userName} already registered, choose another name.";
+		if(!$result) return array("error" => "Error in registering user, Try after some time.");
+		else return array("message" => "User successfully registered");
+	} else return array("error" => "User with {$userName} already registered, choose another name.");
 }
 
 function checkLogin() {
@@ -28,13 +26,11 @@ function getLoggedInUserId() {
 }
 
 function login($userName,$password) {
-//	$userName = mysql_real_escape_string($userName);
-//	$password = mysql_real_escape_string($password);
 	$query = "SELECT `userId`,`password` FROM `users` WHERE `userName` = '{$userName}'";
 	$result = mysql_query($query) or die($query);
-	if(!$result) return "Wrong username, '{$userName}'";
+	if(!$result) return array("error" => "Wrong username, '{$userName}'");
 	$row = mysql_fetch_assoc($result);
-	if($row['password']!=md5($password)) return "Wrong password";
+	if($row['password']!=md5($password)) return array("error" => "Wrong password");
 	session_start();
 	$_SESSION['userId'] = $row['userId'];
 }
@@ -45,47 +41,59 @@ function logout() {
 }
 
 function changePassword($userName,$password) {
-//	$userName = mysql_real_escape_string($userName);
-//	$password = mysql_real_escape_string($password);
 	$query = "SELECT `userName` FROM `users` WHERE `userName` = '{$userName}'";
 	$result = mysql_query($query) or die($query);
-	if(!$result) return "Wrong username, '{$userName}'";
+	if(!$result) return array("error" => "Wrong username, '{$userName}'");
 	$password = md5($password);
 	$query = "UPDATE `users` SET `password` = '{$password}' WHERE `userName` = '{$userName}'";
 	$result = mysql_query($query) or die($query);
-	if(!$result) return "Error in changing password, try again later";
-	return "Password successfully changed";
+	if(!$result) return array("error" => "Error in changing password, try again later");
+	return array("message" => "Password successfully changed");
 }
 
 function userExists($userName) {
-//	$userName = mysql_real_escape_string($userName);
 	$query = "SELECT `userName` FROM `users` WHERE `userName` = '{$userName}'";
 	$result = mysql_query($query) or die($query);
-	return $result;
+    if($result===NULL) return false;
+    if(mysql_num_rows($result)>0) return true;
+    else return false;
 }
 
 function userIdExists($userId) {
-//	$userId = mysql_real_escape_string($userId);
 	$query = "SELECT `userId` FROM `users` WHERE `userId` = '{$userId}'";
 	$result = mysql_query($query) or die($query);
-	return $result;
+    if($result===NULL) return false;
+    if($mysql_num_rows($result)>0) return true;
+    else return false;
 }
 
 function cashInHand($userId) {
-//	$userId = mysql_real_escape_string($userId);
-	$query = "SELECT `cashInHand` FROM `users` WHERE `userId` = '{$userId}'";
+	$query = "SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'cashInHand'";
 	$result = mysql_query($query) or die($query);
-	if($row = mysql_fetch_assoc($result)) return $row['cashInHand'];
+	if($row = mysql_fetch_assoc($result)) return $row['value'];
 	return -1;
 }
 
-function createUser($userName,$password) {
-//	$userName = mysql_real_escape_string($userName);
-//	$password = mysql_real_escape_string($password);
-	if(userExists($userName)) return "User with name {$userName} already exists";
-	$query = "INSERT INTO `users` VALUES('{$userName}','{$password}','".CASH_IN_HAND."')")
+/**
+ * function sharesInHand(userId,stockId)
+ * uses "holding" table to return the number of stocks held by given user
+ * return -1 in case of any error
+ **/
+function sharesInHand($userId,$stockId) {
+	$query = "SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = '{$stockId}'";
 	$result = mysql_query($query);
-	if(!$result) return "Problem in creating user, try again later";
-	return "User created successfully";
+	if(!$result) return -1;
+	if(mysql_num_rows($result)==0) {
+		$insQuery = "INSERT INTO `users_data` VALUES('{$userId}',NULL,'{$stockId}','0')";
+		if(!mysql_query($insQuery)) return -1;
+		return 0;
+	}
+	$row = mysql_fetch_assoc($result);
+	return $row['num'];
+}
+
+function getUserHiddenDetails() {
+    $hiddenDetails = array("cashInHand");
+    return $hiddenDetails;
 }
 ?>
