@@ -9,7 +9,7 @@ if($userId==-1) { //If not logged in
     die(json_encode($error));
 }
 
-$getDetail = "All";
+$getDetail = "portfolio";
 if(isset($_GET['getDetail'])) {
     $getDetail = mysql_real_escape_string($_GET['getDetail']);
     $supportedOptions = array("portfolio","ranklist");
@@ -21,7 +21,7 @@ if(isset($_GET['getDetail'])) {
 
 $graphSpan = GRAPH_SPAN;
 if($getDetail=="portfolio") {
-    $result = mysql_query("SELECT `time`, `key`, `value` FROM `users_data` WHERE `userId` = {$userId}");
+    $result = mysql_query("SELECT `time`, `key`, `value` FROM `users_data` WHERE `userId` = {$userId} AND `time` > NOW() - INTERVAL {$graphSpan}");
     $hiddenDetails = getUserHiddenDetails();
     while($row=mysql_fetch_assoc($result)) {
         if(!in_array($row['key'],$hiddenDetails)) {
@@ -34,15 +34,18 @@ if($getDetail=="portfolio") {
             }
         }
     }
+    echo json_encode($userDetail);
 } else if($getDetail=="ranklist") {
     $interval = UPDATE_INTERVAL;
     $result = mysql_query("SELECT `value` FROM `misc_data` WHERE `key` = 'ranklist' AND `time` > NOW() - INTERVAL {$interval}");
     if($row=mysql_fetch_assoc($result)) {
         echo $row['value'];
     } else {
-        $result = mysql_query("SELECT u.`userId`, SUM(u.value*(s.p1+s.p2+s.p3+s.p4+s.p5)/5) AS 'holdings' FROM `users_data` u OUTER JOIN `stocks` s ON u.key == s.stockId GROUP BY `userId`");
+        $result = mysql_query("SELECT u.`userId`, SUM(u.value*(s.p1+s.p2+s.p3+s.p4+s.p5)/5) AS 'holdings' FROM `users_data` AS u LEFT JOIN `stocks` AS s ON u.key = s.stockId GROUP BY u.`userId`");
         while($row = mysql_fetch_assoc($result)) {
-            $users[$row['userId']]['holdings'] = $row['holdings'];
+            $holdings = 0;
+            if($row['holdings']!==NULL) $holdings = $row['holdings'];
+            $users[$row['userId']]['holdings'] = $holdings;
         }
         $result = mysql_query("SELECT `userId`, `value` FROM `users_data` WHERE `key` = 'cashInHand'");
         while($row = mysql_fetch_assoc($result)) {

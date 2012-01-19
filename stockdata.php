@@ -19,7 +19,7 @@ if(isset($_GET['stockId'])) {
 
 $graphSpan = GRAPH_SPAN;
 if($stockId=="Index") {
-    $result = mysql_query("SELECT `time`, `value` FROM `values` WHERE `key` = 'index' AND `time` > NOW() - INTERVAL {$graphSpan}");
+    $result = mysql_query("SELECT `time`, `value` FROM `misc_data` WHERE `key` = 'index' AND `time` > NOW() - INTERVAL {$graphSpan}");
     while($row=mysql_fetch_assoc($result)) {
         $values[$row['time']] = $row['value'];
     }
@@ -34,7 +34,9 @@ if($stockId=="Index") {
         $rowStockId = $row['stockId'];
         unset($row['stockId']);
         $stocks[$rowStockId] = $row;
-        $stocks[$rowStockId]['graph'] = $values[$rowStockId];
+        if($values[$rowStockId]) $graph = $values[$rowStockId];
+        else $graph = array();
+        $stocks[$rowStockId]['graph'] = $graph;
     }
     echo json_encode($stocks);
 } else {
