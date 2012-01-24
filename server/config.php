@@ -11,4 +11,5 @@ define("UPDATE_INTERVAL","5 MINUTE");
 define("GRAPH_SPAN","24 HOUR");
 
 define("THE_TRADER","80153");
+define("CUTOFF_PERCENT","10.0");
 ?>

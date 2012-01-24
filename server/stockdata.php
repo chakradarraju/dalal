@@ -32,7 +32,6 @@ if($stockId=="Index") {
     $result = mysql_query("SELECT * FROM `stocks`");
     while($row=mysql_fetch_assoc($result)) {
         $rowStockId = $row['stockId'];
-        unset($row['stockId']);
         $stocks[$rowStockId] = $row;
         if($values[$rowStockId]) $graph = $values[$rowStockId];
         else $graph = array();

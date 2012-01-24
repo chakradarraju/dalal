@@ -12,12 +12,13 @@ function buy($stockId,$num,$value) {
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $buyId = $loggedInUserId;
+    $buyId = getLoggedInUserId();
     $marketValue = getMarketValue($stockId);
     $query = "SELECT `sellId`,`userId`,`num`,`value` FROM `sell` WHERE `stockId` = '{$stockId}' ORDER BY `value` ASC";
     $result = mysql_query($query);
+    $cutoff = 1 + CUTOFF_PERCENT/100.0;
     while($num>0&&$row=mysql_fetch_assoc($result)) {
-        if($row['value']>1.1*$marketValue||$row['value']>$value) break;
+        if($row['value']>$cutoff*$marketValue||$row['value']>$value) break;
         $cur_num = min($num,$row['num']);
         $cur_value = ($value+$row['value'])/2;
         $tradeResult = trade($row['userId'],$buyId,$stockId,$cur_num,$cur_value);
@@ -33,8 +34,8 @@ function buy($stockId,$num,$value) {
             if(!$result) mysql_query("ROLLBACK");
         }
     }
-    if($value>=1.1*$marketValue&&$num>0) {
-        $cur_value = ($value+1.1*$marketValue)/2;
+    if($value>=$cutoff*$marketValue&&$num>0) {
+        $cur_value = ($value+$cutoff*$marketValue)/2;
         $tradeResult = trade(THE_TRADER,$buyId,$stockId,$num,$cur_value);
         if($tradeResult==1) $num = 0;
         else return "Bought ".($Cnum-$num);
@@ -65,10 +66,11 @@ function sell($stockId,$num,$value) {
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $sellId = $loggedInUserId;
+    $sellId = getLoggedInUserId();
     $marketValue = getMarketValue($stockId);
-    if($value<0.9*$marketValue) {
-        $cur_value = ($value+0.9*$marketValue)/2;
+    $cutoff = 1 - CUTOFF_PERCENT/100.0;
+    if($value<$cutoff*$marketValue) {
+        $cur_value = ($value+$cutoff*$marketValue)/2;
         $tradeResult = trade($sellId,THE_TRADER,$stockId,$num,$cur_value);
         if($tradeResult==1) $num = 0;
         else return "Error processing order";
@@ -197,7 +199,7 @@ QUERY;
 
 if($loggedInUserId==-1) {
     $error['error'] = "Your session expired<br />Please login again";
-    die(json_encode($error);
+    die(json_encode($error));
 }
 
 if(isset($_POST['trade'])) {
@@ -211,7 +213,7 @@ if(isset($_POST['trade'])) {
         die(json_encode($error));
     }
     $result = $trade($shareId,$number,$rate);
-    echo json_encode($result);
+    die(json_encode($result));
 }
 
 if(isset($_POST['buyFromExchange'])) {
@@ -222,7 +224,7 @@ if(isset($_POST['buyFromExchange'])) {
         die(json_encode($error));
     }
     $result = buyFromExchange($shareId,$number);
-    echo json_encode($result);
+    die(json_encode($result));
 }
 
 ?>
