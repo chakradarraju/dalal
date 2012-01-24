@@ -21,7 +21,7 @@ if(isset($_GET['getDetail'])) {
 
 $graphSpan = GRAPH_SPAN;
 if($getDetail=="portfolio") {
-    $result = mysql_query("SELECT `time`, `key`, `value` FROM `users_data` WHERE `userId` = {$userId} AND `time` > NOW() - INTERVAL {$graphSpan}");
+    $result = mysql_query("SELECT `time`, `key`, `value` FROM `users_data` WHERE `userId` = {$userId}");
     $hiddenDetails = getUserHiddenDetails();
     while($row=mysql_fetch_assoc($result)) {
         if(!in_array($row['key'],$hiddenDetails)) {
@@ -41,7 +41,7 @@ if($getDetail=="portfolio") {
     if($row=mysql_fetch_assoc($result)) {
         echo $row['value'];
     } else {
-        $result = mysql_query("SELECT u.`userId`, SUM(u.value*(s.p1+s.p2+s.p3+s.p4+s.p5)/5) AS 'holdings' FROM `users_data` AS u LEFT JOIN `stocks` AS s ON u.key = s.stockId GROUP BY u.`userId`");
+        $result = mysql_query("SELECT u.`userId`, SUM(u.value*s.marketValue) AS 'holdings' FROM `users_data` AS u LEFT JOIN `stocks` AS s ON u.key = s.stockId GROUP BY u.`userId`");
         while($row = mysql_fetch_assoc($result)) {
             $holdings = 0;
             if($row['holdings']!==NULL) $holdings = $row['holdings'];
@@ -64,6 +64,16 @@ if($getDetail=="portfolio") {
             return $aWorth==$bWorth?0:$aWorth>$bWorth?-1:1;
         });
         $ranklistText = json_encode($ranklist);
+        foreach($ranklist as $rank => $user) {
+            $query =<<<QUERY
+INSERT INTO `users_data`
+    SELECT '{$user['userId']}', NOW(), 'graph_point', ROUND({$user['totalWorth']},2) FROM `users`
+    WHERE NOT EXISTS (
+        SELECT * FROM `users_data` WHERE `userId` = '{$user['userId']}' AND `key` = 'graph_point' AND `time` > NOW() - INTERVAL {$interval}
+    ) LIMIT 1;
+QUERY;
+            mysql_query($query);
+        }
         mysql_query("INSERT INTO `misc_data` VALUES(NULL,'ranklist','{$ranklistText}')");
         echo $ranklistText;
     }
