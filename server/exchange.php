@@ -1,17 +1,18 @@
 <?php
+require_once("users.php");
+require_once("stock.php");
 
+$loggedInUserId = getLoggedInUserId();
 /**
  * function buy(stockId,num,value)
  * Buy 'num' number of stock 'stockId' based on previous sell orders <= 'value'
  * return status of the buy request as string
  **/
 function buy($stockId,$num,$value) {
-    require_once("users.php");
-    require_once("stock.php");
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $buyId = getLoggedInUserId();
+    $buyId = $loggedInUserId;
     $marketValue = getMarketValue($stockId);
     $query = "SELECT `sellId`,`userId`,`num`,`value` FROM `sell` WHERE `stockId` = '{$stockId}' ORDER BY `value` ASC";
     $result = mysql_query($query);
@@ -61,12 +62,10 @@ function buy($stockId,$num,$value) {
  * return status of the buy request as string
  **/
 function sell($stockId,$num,$value) {
-    require_once("users.php");
-    require_once("stock.php");
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $sellId = getLoggedInUserId();
+    $sellId = $loggedInUserId;
     $marketValue = getMarketValue($stockId);
     if($value<0.9*$marketValue) {
         $cur_value = ($value+0.9*$marketValue)/2;
@@ -115,8 +114,6 @@ function sell($stockId,$num,$value) {
  * return -1 in case of any error
  **/
 function trade($fromId,$toId,$stockId,$num,$value) {
-    require_once("users.php");
-    require_once("stock.php");
     if(!userIdExists($fromId)||!userIdExists($toId)||!stockIdExists($stockId)) return "Invalid inputs";
     $fromCash = cashInHand($fromId);
     $toCash = cashInHand($toId);
@@ -143,6 +140,12 @@ INSERT INTO `stocks_data`
         SELECT * FROM `stocks_data` WHERE `stockId` = '{$stockId}' AND `key` = 'graph_point' AND `time` > NOW() - INTERVAL {$interval}
     ) LIMIT 1;
 QUERY;
+    $failed = runQueries($query);
+    if($failed) return -1;
+    return 1;
+}
+
+function runQueries($query) {
     $singlequeries = explode(";\n",$query);
     $failed = false;
     foreach($singlequeries as $singlequery) {
@@ -156,8 +159,70 @@ QUERY;
             }
         }
     }
-    if($failed) return -1;
-    return 1;
+    return $failed;
+}
+
+function buyFromExchange($shareId, $number) {
+    $result = mysql_query("SELECT `name`,`exchangePrice`,`sharesInExchange` FROM `stocks` WHERE `stockId` = '{$shareId}'");
+    $numToBuy = $number;
+    $message = "";
+    if($row = mysql_fetch_assoc($result)) {
+        $cashInHand = cashInHand($loggedInUserId);
+        if($row['sharesInExchange']<$number) {
+            $numToBuy = $row['sharesInExchange'];
+            $message = "Only $numToBuy shares of {$row['name']} were available in exchange";
+        }
+        if($cashInHand<$numToBuy*$row['exchangePrice']) {
+            $numToBuy = floor($cashInHand/$row['exchangePrice']);
+            $message = "You had cash enough to buy only $numToBuy shares of {$row['name']}";
+        }
+        $amount = $numToBuy*$row['exchangePrice'];
+        $query =<<<QUERY
+START TRANSACTION;
+UPDATE `stocks` SET `sharesInExchange` = `sharesInExchange` - $numToBuy WHERE `stockId` = '{$shareId}';
+UPDATE `users_data` SET `value` = `value` + $numToBuy WHERE `userId` = '{$loggedInUserId}' AND `key` = '{$shareId}';
+UPDATE `users_data` SET `value` = `value` - $amount WHERE `userId` = '{$loggedInUserId}' AND `key` = 'cashInHand';
+COMMIT;
+QUERY;
+        $failed = runQueries($query);
+        if($failed) return array("error" => "Unknown database error, we looking into it, try after sometime");
+        if($message=="") {
+            $message = "Bought $number shares of {$row['name']}";
+        }
+        return array("message" => $message);
+    } else {
+        return array("error" => "Stock not found in database");
+    }
+}
+
+if($loggedInUserId==-1) {
+    $error['error'] = "Your session expired<br />Please login again";
+    die(json_encode($error);
+}
+
+if(isset($_POST['trade'])) {
+    $shareId = mysql_real_escape_string($_POST['shareId']);
+    $number = mysql_real_escape_string($_POST['number']);
+    $trade = mysql_real_escape_string($_POST['trade']);
+    $rate = mysql_real_escape_string($_POST['rate']);
+    $supportedTrade = array("buy","sell");
+    if(!Is_Numeric($shareId)||!Is_Numeric($number)||!Is_Numeric($rate)||!in_array($trade,$supportedTrade)) {
+        $error['error'] = "Invalid request";
+        die(json_encode($error));
+    }
+    $result = $trade($shareId,$number,$rate);
+    echo json_encode($result);
+}
+
+if(isset($_POST['buyFromExchange'])) {
+    $shareId = mysql_real_escape_string($_POST['shareId']);
+    $number = mysql_real_escape_string($_POST['number']);
+    if(!Is_Numeric($shareId)||!Is_Numeric($number)) {
+        $error['error'] = "Invalid request";
+        die(json_encode($error));
+    }
+    $result = buyFromExchange($shareId,$number);
+    echo json_encode($result);
 }
 
 ?>
