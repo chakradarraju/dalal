@@ -12,4 +12,6 @@ define("GRAPH_SPAN","24 HOUR");
 
 define("THE_TRADER","80153");
 define("CUTOFF_PERCENT","10.0");
+
+define("MORTGAGE_PERCENT","70.0");
 ?>

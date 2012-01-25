@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 24, 2012 at 04:44 PM
+-- Generation Time: Jan 25, 2012 at 08:03 PM
 -- Server version: 5.1.58
 -- PHP Version: 5.3.6-13ubuntu3.3
 
@@ -13,6 +13,21 @@ SET time_zone = "+00:00";
 --
 -- Database: `dalal`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank`
+--
+
+CREATE TABLE IF NOT EXISTS `bank` (
+  `mortgageId` int(11) NOT NULL AUTO_INCREMENT,
+  `userId` int(11) NOT NULL,
+  `stockId` int(11) NOT NULL,
+  `number` int(11) NOT NULL,
+  `loanValue` double NOT NULL,
+  PRIMARY KEY (`mortgageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -27,14 +42,15 @@ CREATE TABLE IF NOT EXISTS `buy` (
   `num` int(11) NOT NULL,
   `value` double NOT NULL,
   PRIMARY KEY (`buyId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `buy`
 --
 
 INSERT INTO `buy` (`buyId`, `userId`, `stockId`, `num`, `value`) VALUES
-(7, 1, 2, 2, 7.1);
+(7, 1, 2, 2, 7.1),
+(9, 1, 1, 10, 5.05);
 
 -- --------------------------------------------------------
 
@@ -65,7 +81,8 @@ INSERT INTO `log` (`time`, `fromId`, `toId`, `stockId`, `num`, `value`) VALUES
 ('2012-01-24 10:46:15', 1, 2, 2, 2, 7.25),
 ('2012-01-24 10:50:21', 2, 1, 2, 2, 7.3),
 ('2012-01-24 10:51:44', 2, 1, 2, 2, 7.2),
-('2012-01-24 10:52:47', 2, 1, 2, 4, 7.3);
+('2012-01-24 10:52:47', 2, 1, 2, 4, 7.3),
+('2012-01-24 16:18:44', 80153, 1, 1, 10, 7.76);
 
 -- --------------------------------------------------------
 
@@ -88,7 +105,8 @@ INSERT INTO `misc_data` (`time`, `key`, `value`) VALUES
 ('2012-01-24 10:51:44', 'index', '6.04'),
 ('2012-01-24 10:52:47', 'index', '6.06'),
 ('2012-01-24 11:08:15', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000},{"holdings":"163.27","cashInHand":"49966.56","userId":1,"totalWorth":50129.83},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7},{"holdings":"490.15","cashInHand":"10033.44","userId":2,"totalWorth":10523.59}]'),
-('2012-01-24 11:09:18', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000},{"holdings":"163.27","cashInHand":"49966.56","userId":1,"totalWorth":50129.83},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7},{"holdings":"490.15","cashInHand":"10033.44","userId":2,"totalWorth":10523.59}]');
+('2012-01-24 11:09:18', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000},{"holdings":"163.27","cashInHand":"49966.56","userId":1,"totalWorth":50129.83},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7},{"holdings":"490.15","cashInHand":"10033.44","userId":2,"totalWorth":10523.59}]'),
+('2012-01-24 16:18:44', 'index', '6.52');
 
 -- --------------------------------------------------------
 
@@ -122,6 +140,7 @@ CREATE TABLE IF NOT EXISTS `stocks` (
   `stockId` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
   `marketValue` double NOT NULL,
+  `exchangePrice` double NOT NULL,
   `lastTrade` double NOT NULL,
   `dayLow` double NOT NULL,
   `dayHigh` double NOT NULL,
@@ -135,9 +154,9 @@ CREATE TABLE IF NOT EXISTS `stocks` (
 -- Dumping data for table `stocks`
 --
 
-INSERT INTO `stocks` (`stockId`, `name`, `marketValue`, `lastTrade`, `dayLow`, `dayHigh`, `numIssued`, `sharesInExchange`, `factor`) VALUES
-(1, 'first', 5.01, 5, 5, 5.07, 30, 30, 0.5),
-(2, 'st2', 7.1, 7.3, 7, 7.3, 30, 30, 0.5);
+INSERT INTO `stocks` (`stockId`, `name`, `marketValue`, `exchangePrice`, `lastTrade`, `dayLow`, `dayHigh`, `numIssued`, `sharesInExchange`, `factor`) VALUES
+(1, 'first', 5.93, 5, 7.76, 5, 7.76, 30, 30, 0.5),
+(2, 'st2', 7.1, 7, 7.3, 7, 7.3, 30, 30, 0.5);
 
 -- --------------------------------------------------------
 
@@ -162,7 +181,8 @@ INSERT INTO `stocks_data` (`stockId`, `time`, `key`, `value`) VALUES
 (1, '2012-01-24 10:41:35', 'graph_point', '5.06'),
 (2, '2012-01-24 10:46:15', 'graph_point', '7.25'),
 (2, '2012-01-24 10:51:44', 'graph_point', '7.20'),
-(2, '2012-01-24 10:52:47', 'graph_point', '7.30');
+(2, '2012-01-24 10:52:47', 'graph_point', '7.30'),
+(1, '2012-01-24 16:18:44', 'graph_point', '7.76');
 
 -- --------------------------------------------------------
 
@@ -206,9 +226,9 @@ CREATE TABLE IF NOT EXISTS `users_data` (
 
 INSERT INTO `users_data` (`userId`, `time`, `key`, `value`) VALUES
 (1, '2012-01-19 16:53:01', 'Display Name', 'Jack'),
-(1, '2012-01-24 10:52:47', 'cashInHand', '49966.56'),
+(1, '2012-01-24 16:18:44', 'cashInHand', '49889.00'),
 (1, '2012-01-24 10:52:47', '2', '11'),
-(1, '2012-01-24 10:43:24', '1', '17'),
+(1, '2012-01-24 16:18:44', '1', '27'),
 (1, '2012-01-19 16:56:04', 'graph_point', '500'),
 (2, '2012-01-24 10:52:47', 'cashInHand', '10033.44'),
 (2, '2012-01-19 16:59:28', 'Display Name', 'Chakradar Raju'),
@@ -229,5 +249,6 @@ INSERT INTO `users_data` (`userId`, `time`, `key`, `value`) VALUES
 (4, '2012-01-24 11:09:18', 'graph_point', '500000'),
 (1, '2012-01-24 11:09:18', 'graph_point', '50129.83'),
 (3, '2012-01-24 11:09:18', 'graph_point', '30049.70'),
-(2, '2012-01-24 11:09:18', 'graph_point', '10523.59');
+(2, '2012-01-24 11:09:18', 'graph_point', '10523.59'),
+(1, '2012-01-24 17:58:52', 'graph_point', '600');
 

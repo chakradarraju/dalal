@@ -28,3 +28,12 @@ userdata.php:
         Returns JSON object of all unhidden user data in database, including graph and stocks. graph will have JSON object of all recorded points, stocks will be JSON object containing each stock owned by the user as key=stockId and value=number of shares owned
     ?getDetail=ranklist:
         Generates ranklist and returns it as JSON object
+
+bank.php
+    Default:
+        does nothing
+    POST: mortgage, stockId, number, value
+        mortgage 'number' number of shares of 'stockId' for 'value' money
+        Return result in JSON
+    POST: recover, mortgageId
+        get back the shares from the bank by paying back the original amount
