@@ -23,6 +23,7 @@ $graphSpan = GRAPH_SPAN;
 if($getDetail=="portfolio") {
     $result = mysql_query("SELECT `time`, `key`, `value` FROM `users_data` WHERE `userId` = {$userId}");
     $hiddenDetails = getUserHiddenDetails();
+    $userDetail['userId'] = $userId;
     while($row=mysql_fetch_assoc($result)) {
         if(!in_array($row['key'],$hiddenDetails)) {
             if($row['key']=="graph_point") {
@@ -63,6 +64,10 @@ if($getDetail=="portfolio") {
             $bWorth = $b['totalWorth'];
             return $aWorth==$bWorth?0:$aWorth>$bWorth?-1:1;
         });
+        $currentRank = 1;
+        foreach($ranklist as $key => $value) {
+            $ranklist[$key]['rank'] = $currentRank++;
+        }
         $ranklistText = json_encode($ranklist);
         foreach($ranklist as $rank => $user) {
             $query =<<<QUERY
