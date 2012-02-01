@@ -7,7 +7,7 @@ function register($userName,$password) {
     $result = mysql_query($query) or die($query);
     if(!mysql_fetch_assoc($result)) {
         $password = md5($password);
-        $query = "INSERT INTO `users` VALUES(NULL,'{$userName}','{$password}')";
+        $query = "INSERT INTO `users` VALUES(NULL,'{$userName}','{$password}',0)";
         $result = mysql_query($query) or die($query);
         $useridresult = mysql_query("SELECT `userId` FROM `users` WHERE `userName` = '{$userName}'");
         $useridrow = mysql_fetch_assoc($useridresult);
@@ -32,12 +32,22 @@ function getLoggedInUserId() {
     return $_SESSION['userId'];
 }
 
-function login($userName,$password) {
-    $query = "SELECT `userId`,`password` FROM `users` WHERE `userName` = '{$userName}'";
+function logindb($userName,$password) {
+    $query = "SELECT `userId`,`password` FROM `users` WHERE `userName` = '{$userName}' AND `loginMethod` = 'db'";
     $result = mysql_query($query) or die($query);
     if(!$result) return array("error" => "Wrong username, '{$userName}'");
     $row = mysql_fetch_assoc($result);
     if($row['password']!=md5($password)) return array("error" => "Wrong password");
+    session_start();
+    $_SESSION['userId'] = $row['userId'];
+    return array("message" => "User {$userName}, successfully logged in");
+}
+
+function loginOAuth($oauthId,$oauthProvider) {
+    $query = "SELECT * FROM `users` WHERE `userName` = '{$oauthProvider}' AND `password` = '{$oauthId}'";
+    $result = mysql_query($query) or die($query);
+    if(!$result) return array("error" => "User not found in database");
+    $row = mysql_fetch_assoc($result);
     session_start();
     $_SESSION['userId'] = $row['userId'];
     return array("message" => "User {$userName}, successfully logged in");

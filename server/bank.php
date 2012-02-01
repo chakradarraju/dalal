@@ -3,20 +3,20 @@ require_once("users.php");
 require_once("stock.php");
 require_once("exchange.php");
 
-$userId = getLoggedInUserId();
-
 function mortgage($stockId, $number, $value) {
+    $userId = getLoggedInUserId();
     $result = mysql_query("SELECT `marketValue` FROM `stocks` WHERE `stockId` = '{$stockId}'");
     if($row = mysql_fetch_assoc($result)) {
-        if($row['marketValue']*$number*MORTGAGE_PERCENT/100.0<$value) {
-            return array("message" => "The property is lower in cost than the value quoted");
-        }
+        $marketValue = $row['marketValue'];
     } else {
         return array("error" => "stock not found in database");
     }
     $numberInHand = sharesInHand($userId, $stockId);
-    if($number<$numberInHand) {
+    if($numberInHand<$number) {
         return array("error" => "You dont have enough shares");
+    }
+    if($marketValue*$number*MORTGAGE_PERCENT/100.0<$value) {
+        return array("message" => "The property is lower in cost than the value quoted");
     }
     $query =<<<QUERY
 START TRANSACTION;
@@ -33,7 +33,8 @@ QUERY;
 }
 
 function recover($mortgageId) {
-    $result = mysql_query("SELECT * FROM `bank` WHERE `mortgageId` = '{$mortgage}'");
+    $userId = getLoggedInUserId();
+    $result = mysql_query("SELECT * FROM `bank` WHERE `mortgageId` = '{$mortgageId}'");
     if($row = mysql_fetch_assoc($result)) {
         if($row['userId']!=$userId) {
             return array("message" => "The mortgage doesn't seemed to be yours");
@@ -59,6 +60,16 @@ QUERY;
     return array("message" => "Property bought back");
 }
 
+function getUserMortgages($userId = NULL) {
+    if($userId===NULL) $userId = getLoggedInUserId();
+    $result = mysql_query("SELECT `mortgageId`, `stockId`, `number`, `loanValue` FROM `bank` WHERE `userId` = '{$userId}'");
+    $return = array();
+    while($row = mysql_fetch_assoc($result)) {
+        $return[] = $row;
+    }
+    return $return;
+}
+
 if(isset($_POST['mortgage'])) {
     $stockId = mysql_real_escape_string($_POST['stockId']);
     $number = mysql_real_escape_string($_POST['number']);
@@ -73,4 +84,8 @@ if(isset($_POST['recover'])) {
     die(json_encode($return));
 }
 
+if(isset($_POST['list'])) {
+    $list = getUserMortgages($userId);
+    die(json_encode($list));
+}
 ?>

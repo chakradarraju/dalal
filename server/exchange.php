@@ -2,7 +2,6 @@
 require_once("users.php");
 require_once("stock.php");
 
-$loggedInUserId = getLoggedInUserId();
 /**
  * function buy(stockId,num,value)
  * Buy 'num' number of stock 'stockId' based on previous sell orders <= 'value'
@@ -165,14 +164,20 @@ function runQueries($query) {
 }
 
 function buyFromExchange($shareId, $number) {
+    $userId = getLoggedInUserId();
     $result = mysql_query("SELECT `name`,`exchangePrice`,`sharesInExchange` FROM `stocks` WHERE `stockId` = '{$shareId}'");
     $numToBuy = $number;
     $message = "";
     if($row = mysql_fetch_assoc($result)) {
-        $cashInHand = cashInHand($loggedInUserId);
+        $sharesInHand = sharesInHand($userId,$shareId);
+        $cashInHand = cashInHand($userId);
         if($row['sharesInExchange']<$number) {
             $numToBuy = $row['sharesInExchange'];
-            $message = "Only $numToBuy shares of {$row['name']} were available in exchange";
+            if($numToBuy>0) {
+                $message = "Only $numToBuy shares of {$row['name']} were available in exchange";
+            } else {
+                $message = "There are no shares of {$row['name']} available in exchange now";
+            }
         }
         if($cashInHand<$numToBuy*$row['exchangePrice']) {
             $numToBuy = floor($cashInHand/$row['exchangePrice']);
@@ -182,8 +187,8 @@ function buyFromExchange($shareId, $number) {
         $query =<<<QUERY
 START TRANSACTION;
 UPDATE `stocks` SET `sharesInExchange` = `sharesInExchange` - $numToBuy WHERE `stockId` = '{$shareId}';
-UPDATE `users_data` SET `value` = `value` + $numToBuy WHERE `userId` = '{$loggedInUserId}' AND `key` = '{$shareId}';
-UPDATE `users_data` SET `value` = `value` - $amount WHERE `userId` = '{$loggedInUserId}' AND `key` = 'cashInHand';
+UPDATE `users_data` SET `value` = `value` + $numToBuy WHERE `userId` = '{$userId}' AND `key` = '{$shareId}';
+UPDATE `users_data` SET `value` = `value` - $amount WHERE `userId` = '{$userId}' AND `key` = 'cashInHand';
 COMMIT;
 QUERY;
         $failed = runQueries($query);
@@ -197,7 +202,7 @@ QUERY;
     }
 }
 
-if($loggedInUserId==-1) {
+if(getLoggedInUserId()==-1) {
     $error['error'] = "Your session expired<br />Please login again";
     die(json_encode($error));
 }

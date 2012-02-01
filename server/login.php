@@ -6,7 +6,7 @@ if(isset($_GET['logout'])) {
 if(isset($_POST['username'])) {
     require_once("users.php");
     if(isset($_POST['register'])) $result = register($_POST['username'],$_POST['password']);
-    else $result = login($_POST['username'],$_POST['password']);
+    else $result = logindb($_POST['username'],$_POST['password']);
     if(isset($result['error'])) {
         echo $result['error'] . "<br/>";
     } else if(isset($result['message'])) {
