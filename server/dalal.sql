@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 25, 2012 at 08:03 PM
+-- Generation Time: Feb 01, 2012 at 10:32 PM
 -- Server version: 5.1.58
 -- PHP Version: 5.3.6-13ubuntu3.3
 
@@ -27,7 +27,14 @@ CREATE TABLE IF NOT EXISTS `bank` (
   `number` int(11) NOT NULL,
   `loanValue` double NOT NULL,
   PRIMARY KEY (`mortgageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `bank`
+--
+
+INSERT INTO `bank` (`mortgageId`, `userId`, `stockId`, `number`, `loanValue`) VALUES
+(2, 2, 1, 1, 5.5);
 
 -- --------------------------------------------------------
 
@@ -106,7 +113,8 @@ INSERT INTO `misc_data` (`time`, `key`, `value`) VALUES
 ('2012-01-24 10:52:47', 'index', '6.06'),
 ('2012-01-24 11:08:15', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000},{"holdings":"163.27","cashInHand":"49966.56","userId":1,"totalWorth":50129.83},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7},{"holdings":"490.15","cashInHand":"10033.44","userId":2,"totalWorth":10523.59}]'),
 ('2012-01-24 11:09:18', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000},{"holdings":"163.27","cashInHand":"49966.56","userId":1,"totalWorth":50129.83},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7},{"holdings":"490.15","cashInHand":"10033.44","userId":2,"totalWorth":10523.59}]'),
-('2012-01-24 16:18:44', 'index', '6.52');
+('2012-01-24 16:18:44', 'index', '6.52'),
+('2012-01-28 15:47:57', 'ranklist', '[{"holdings":0,"cashInHand":"500000","userId":4,"totalWorth":500000,"rank":1},{"holdings":"238.21","cashInHand":"49889.00","userId":1,"totalWorth":50127.21,"rank":2},{"holdings":"49.7","cashInHand":"30000","userId":3,"totalWorth":30049.7,"rank":3},{"holdings":"577.55","cashInHand":"10033.44","userId":2,"totalWorth":10610.99,"rank":4}]');
 
 -- --------------------------------------------------------
 
@@ -155,8 +163,8 @@ CREATE TABLE IF NOT EXISTS `stocks` (
 --
 
 INSERT INTO `stocks` (`stockId`, `name`, `marketValue`, `exchangePrice`, `lastTrade`, `dayLow`, `dayHigh`, `numIssued`, `sharesInExchange`, `factor`) VALUES
-(1, 'first', 5.93, 5, 7.76, 5, 7.76, 30, 30, 0.5),
-(2, 'st2', 7.1, 7, 7.3, 7, 7.3, 30, 30, 0.5);
+(1, 'first', 5.93, 5, 7.76, 5, 7.76, 30, 0, 0.5),
+(2, 'st2', 7.1, 7, 7.3, 7, 7.3, 30, 26, 0.5);
 
 -- --------------------------------------------------------
 
@@ -192,20 +200,23 @@ INSERT INTO `stocks_data` (`stockId`, `time`, `key`, `value`) VALUES
 
 CREATE TABLE IF NOT EXISTS `users` (
   `userId` int(11) NOT NULL AUTO_INCREMENT,
+  `loginMethod` varchar(100) NOT NULL,
   `userName` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
+  `verified` tinyint(1) NOT NULL,
   PRIMARY KEY (`userId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`userId`, `userName`, `password`) VALUES
-(1, 'chakradarraju', '220a34bbf010e405eb20a4168e69fea1'),
-(2, 'jack', '5f4dcc3b5aa765d61d8327deb882cf99'),
-(3, 'onemore', 'be8f1626ab0d4ff8d36cae9199265271'),
-(4, 'three', '35d6d33467aae9a2e3dccb4b6b027878');
+INSERT INTO `users` (`userId`, `loginMethod`, `userName`, `password`, `verified`) VALUES
+(1, 'db', 'chakradarraju', '220a34bbf010e405eb20a4168e69fea1', 0),
+(2, '', 'jack', '5f4dcc3b5aa765d61d8327deb882cf99', 0),
+(3, '', 'onemore', 'be8f1626ab0d4ff8d36cae9199265271', 0),
+(4, '', 'three', '35d6d33467aae9a2e3dccb4b6b027878', 0),
+(5, 'oauth', 'facebook', '1281515487', 1);
 
 -- --------------------------------------------------------
 
@@ -226,29 +237,37 @@ CREATE TABLE IF NOT EXISTS `users_data` (
 
 INSERT INTO `users_data` (`userId`, `time`, `key`, `value`) VALUES
 (1, '2012-01-19 16:53:01', 'Display Name', 'Jack'),
-(1, '2012-01-24 16:18:44', 'cashInHand', '49889.00'),
-(1, '2012-01-24 10:52:47', '2', '11'),
-(1, '2012-01-24 16:18:44', '1', '27'),
-(1, '2012-01-19 16:56:04', 'graph_point', '500'),
+(1, '2012-02-01 09:22:05', 'cashInHand', '50362.23'),
+(1, '2012-02-01 06:22:34', '2', '12'),
+(1, '2012-02-01 09:22:05', '1', '11'),
+(1, '2012-01-28 14:52:53', 'graph_point', '5.0123'),
 (2, '2012-01-24 10:52:47', 'cashInHand', '10033.44'),
 (2, '2012-01-19 16:59:28', 'Display Name', 'Chakradar Raju'),
 (2, '2012-01-24 10:43:24', '1', '95'),
 (2, '2012-01-24 10:52:47', '2', '2'),
 (2, '2012-01-19 17:00:03', 'graph_point', '1000'),
 (2, '2012-01-19 17:00:15', 'graph_point', '2000'),
-(1, '2012-01-19 17:04:26', 'graph_point', '400'),
+(1, '2012-01-28 14:54:39', 'graph_point', '10'),
 (3, '2012-01-19 17:59:46', 'cashInHand', '30000'),
 (3, '2012-01-19 17:59:46', 'Display Name', 'Something'),
 (3, '2012-01-19 18:03:39', '3', '10'),
 (3, '2012-01-19 18:04:59', '2', '7'),
 (4, '2012-01-19 18:26:18', 'cashInHand', '500000'),
 (4, '2012-01-24 11:08:15', 'graph_point', '500000'),
-(1, '2012-01-24 11:08:15', 'graph_point', '50129.83'),
+(1, '2012-01-28 14:54:46', 'graph_point', '7'),
 (3, '2012-01-24 11:08:15', 'graph_point', '30049.70'),
 (2, '2012-01-24 11:08:15', 'graph_point', '10523.59'),
 (4, '2012-01-24 11:09:18', 'graph_point', '500000'),
-(1, '2012-01-24 11:09:18', 'graph_point', '50129.83'),
+(1, '2012-01-28 14:54:53', 'graph_point', '3'),
 (3, '2012-01-24 11:09:18', 'graph_point', '30049.70'),
 (2, '2012-01-24 11:09:18', 'graph_point', '10523.59'),
-(1, '2012-01-24 17:58:52', 'graph_point', '600');
+(1, '2012-01-28 14:55:01', 'graph_point', '6'),
+(4, '2012-01-28 15:47:57', 'graph_point', '500000'),
+(1, '2012-01-28 15:47:57', 'graph_point', '50127.21'),
+(3, '2012-01-28 15:47:57', 'graph_point', '30049.70'),
+(2, '2012-01-28 15:47:57', 'graph_point', '10610.99'),
+(5, '2012-02-01 10:33:51', 'Display Name', 'Chakradar Raju'),
+(5, '2012-02-01 12:07:43', 'cashInHand', '49842'),
+(5, '2012-02-01 12:07:43', '1', '26'),
+(5, '2012-02-01 11:54:02', '2', '4');
 
