@@ -65,7 +65,7 @@ $('#list_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
 $('#bank_stock > #stock_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
 $('.bank_closer').click(function(){
 comp_td=$(this).parent().parent().find('td');
-$.post("dalal2.0/bank.php", { recover: "", mortgageId: $(comp_td[0]).attr('class')},
+$.post("server/bank.php", { recover: "", mortgageId: $(comp_td[0]).attr('class')},
 function(data) {
 	alert(data);
 });
@@ -89,7 +89,7 @@ trade_company+="<option value=\""+stockdata[x]["stockId"]+"\">"+stockdata[x]["na
 $("#trade_stock > #stock_table > tbody").html(stock_tbody);
 $('.trade_closer').click(function(){
 comp_td=$(this).parent().parent().find('td');
-$.post("dalal2.0/queuedata.php", { cancelOrder: "", type: $(comp_td[3]).html(), orderId: $(comp_td[0]).attr('class')},
+$.post("server/queuedata.php", { cancelOrder: "", type: $(comp_td[3]).html(), orderId: $(comp_td[0]).attr('class')},
 function(data) {
 	alert(data);
 });
@@ -116,13 +116,13 @@ userdata = jQuery.parseJSON(userdata1);
 $('#homedata > label').html("Welcome home "+userdata['Display Name']+" !!");
 $('#cashinhand').html(userdata['cashInHand']);
 $.ajax({
-  url: 'dalal2.0/userdata.php?getDetail=ranklist',
+  url: 'server/userdata.php?getDetail=ranklist',
   success: function(rankdata) {
     setuser_rank(userdata['userId'],rankdata);
   }
  });
 $.ajax({
-  url: 'dalal2.0/stockdata.php',
+  url: 'server/stockdata.php',
   success: function(stockdata) {
     sethome_stock(stockdata,userdata);
   }
@@ -130,14 +130,14 @@ $.ajax({
 }
 
 $('#tradedata > #but_buy').click(function(){
-	$.post("dalal2.0/exchange.php", { trade: "buy", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
+	$.post("server/exchange.php", { trade: "buy", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
 	function(data) {
 		alert(data);
 	});
 });
 
 $('#tradedata > #but_sell').click(function(){
-	$.post("dalal2.0/exchange.php", { trade: "sell", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
+	$.post("server/exchange.php", { trade: "sell", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
 	function(data) {
 		alert(data);
 	});
@@ -145,7 +145,7 @@ $('#tradedata > #but_sell').click(function(){
 var ref_x;
 function setmarket_stockbox(){
 $.ajax({
-  url: 'dalal2.0/stockdata.php',
+  url: 'server/stockdata.php',
   success: function(stockdata1) {
   stockdata = jQuery.parseJSON(stockdata1);
   company_tbody = "<tr title=\"sort\"><td>Company Name</td><td>Share Rate</td></tr>";
@@ -158,7 +158,7 @@ $.ajax({
   company_name = $(this).html();
   if(this.innerHTML!="Company Name"){
   $.ajax({
-  url: 'dalal2.0/stockdata.php',
+  url: 'server/stockdata.php',
   success: function(stockdata1) {
   $('#marketdata > #but_buy').attr('disabled','disabled');
   alert(stockdata1);
@@ -183,7 +183,7 @@ $.ajax({
 }
 
 $('#marketdata > #but_buy').click(function(){
-			$.post("dalal2.0/exchange.php", { buyFromExchange: "true", shareId: stockdata[ref_x]["stockId"], number: $('#marketdata > #in_buyshares').attr('value')},
+			$.post("server/exchange.php", { buyFromExchange: "true", shareId: stockdata[ref_x]["stockId"], number: $('#marketdata > #in_buyshares').attr('value')},
 			function(data) {
 				//alert($(this).parent().html());
 				alert(data);
@@ -192,9 +192,9 @@ $('#marketdata > #but_buy').click(function(){
 
 function setbank(){
 $.ajax({
-	url: 'dalal2.0/stockdata.php',
+	url: 'server/stockdata.php',
 	success: function(stockdata) {
-	$.post("dalal2.0/bank.php", { list: ""},
+	$.post("server/bank.php", { list: ""},
 			function(banklist) {
 				setbank_stock(stockdata,banklist);
 			});
@@ -204,10 +204,10 @@ $.ajax({
 
 function settrade(){
 $.ajax({
-  url: 'dalal2.0/stockdata.php',
+  url: 'server/stockdata.php',
   success: function(stockdata) {
 	$.ajax({
-		url: 'dalal2.0/queuedata.php',
+		url: 'server/queuedata.php',
 		success: function(queuedata) {
 		settrade_stock(stockdata,queuedata);
 		}
@@ -218,7 +218,7 @@ $.ajax({
 }
 
 $('#but_mortgage').click(function(){
-	$.post("dalal2.0/bank.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), rate: $('#bankdata > #in_quote_value').attr('value')},
+	$.post("server/bank.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), rate: $('#bankdata > #in_quote_value').attr('value')},
 	function(data) {
 		alert(data);
 	});
@@ -226,7 +226,7 @@ $('#but_mortgage').click(function(){
 
 $('#icon_home').click(function(){
 $.ajax({
-  url: 'dalal2.0/userdata.php',
+  url: 'server/userdata.php',
   success: function(userdata) {
     sethome_user(userdata);
   }
