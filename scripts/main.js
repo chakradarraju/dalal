@@ -218,7 +218,7 @@ $.ajax({
 }
 
 $('#but_mortgage').click(function(){
-	$.post("server/bank.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), rate: $('#bankdata > #in_quote_value').attr('value')},
+	$.post("server/bank.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), value: $('#bankdata > #in_quote_value').attr('value')},
 	function(data) {
 		alert(data);
 	});
