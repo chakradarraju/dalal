@@ -1,0 +1,453 @@
+body{
+background-color:#e7f4ff;
+margin:0;
+padding:0;
+font-family:Arial;
+}
+#header{
+box-shadow: 0px 0px 10px 3px #9eb8ce;
+-moz-box-shadow:0px 0px 10px 3px #9eb8ce;
+-webkit-box-shadow:0px 0px 10px 3px #9eb8ce;
+position:relative;
+height:104px;
+background:url('../images/header.jpg') repeat-x;
+width:100%;
+}
+#header_buttons{
+float:right;
+width:auto;
+height:30px;
+margin-right:25px;
+}
+.button_font{
+font-size:20px;
+font-weight:bold;
+color:#4e78ac;
+}
+#header_buttons > div{
+position:relative;
+top:30px;
+margin-right:10px;
+cursor:pointer;
+padding:3px 5px;
+border:1px #003c8a solid;
+height:30px;
+width:auto;
+box-shadow: inset -3px -3px 3px 0px #001f43;
+-moz-box-shadow:inset -3px -3px 3px 0px #001f43;
+-webkit-box-shadow:inset -3px -3px 3px 0px #001f43;
+border-radius:2px;
+-moz-border-radius:2px;
+-webkit-border-radius:2px;
+opacity:0.7;
+-moz-opacity:0.7;
+filter: alpha(opacity=70);
+line-height:25px;
+float:right;
+}
+#header_buttons > div:hover{
+opacity:1.0;
+-moz-opacity:1.0;
+filter: alpha(opacity=100);
+}
+#header_title{
+height:104px;
+width:416px;
+background:url('../images/header_title.jpg') no-repeat;
+float:left;
+}
+#outer_container{
+position:relative;
+width:1000px;
+height:1065px;
+margin:0 auto;
+}
+#menu_icons{
+box-shadow: 0px 0px 5px 0px #b6d4ed;
+-moz-box-shadow:0px 0px 5px 0px #b6d4ed;
+-webkit-box-shadow:0px 0px 5px 0px #b6d4ed;
+border:1px solid #b6d4ed;
+position:relative;
+top:20px;
+width:1000px;
+height:100px;
+background-color:#c4e4ff;
+border-radius:15px;
+-moz-border-radius:15px;
+-webkit-border-radius:15px;
+}
+#main_container{
+box-shadow: 0px 0px 5px 0px #b6d4ed;
+-moz-box-shadow:0px 0px 5px 0px #b6d4ed;
+-webkit-box-shadow:0px 0px 5px 0px #b6d4ed;
+border-radius:15px;
+-moz-border-radius:10px;
+-webkit-border-radius:15px;
+width:643px;
+height:500px;
+border:1px solid #b6d4ed;
+position:relative;
+top:30px;
+background-color:#c4e4ff;
+float:left;
+}
+#list_container{
+box-shadow: 0px 0px 5px 0px #b6d4ed;
+-moz-box-shadow:0px 0px 5px 0px #b6d4ed;
+-webkit-box-shadow:0px 0px 5px 0px #b6d4ed;
+border-radius:15px;
+-moz-border-radius:10px;
+-webkit-border-radius:15px;
+width:343px;
+height:500px;
+border:1px solid #b6d4ed;
+position:relative;
+top:30px;
+background-color:#c4e4ff;
+float:right;
+}
+#graph_container{
+box-shadow: 0px 0px 5px 0px #b6d4ed;
+-moz-box-shadow:0px 0px 5px 0px #b6d4ed;
+-webkit-box-shadow:0px 0px 5px 0px #b6d4ed;
+border-radius:15px;
+-moz-border-radius:10px;
+-webkit-border-radius:15px;
+width:1000px;
+height:400px;
+border:1px solid #b6d4ed;
+position:relative;
+top:40px;
+background-color:#c4e4ff;
+clear:both;
+}
+#footer{
+box-shadow: 0px 0px 10px 3px #9eb8ce;
+-moz-box-shadow:0px 0px 10px 3px #9eb8ce;
+-webkit-box-shadow:0px 0px 10px 3px #9eb8ce;
+background:url('../images/footer.jpg') repeat-x;
+width:100%;
+height:50px;
+}
+#updates{
+position:relative;
+float:left;
+border:1px solid #a7c2d9;
+top:27px;
+box-shadow: 0px 0px 10px 3px #acc8e0;
+-moz-box-shadow:0px 0px 10px 3px #acc8e0;
+-webkit-box-shadow:0px 0px 10px 3px #acc8e0;
+left:40px;
+height:50px;
+background:url('../images/updates.png') no-repeat;
+width:500px;
+background-color:#b6d4ed;
+}
+#icons_outer{
+position:relative;
+float:left;
+width:440px;
+left:40px;
+height:66px;
+top:28px;
+}
+#icons_outer > div{
+margin-left:20px;
+float:left;
+opacity:0.7;
+-moz-opacity:0.7;
+filter: alpha(opacity=70);
+width:50px;
+height:66px;
+}
+#icons_outer > div:hover{
+opacity:1.0;
+-moz-opacity:1.0;
+filter: alpha(opacity=100);
+box-shadow: 0px 0px 10px 3px #acc8e0;
+-moz-box-shadow:0px 0px 10px 3px #acc8e0;
+-webkit-box-shadow:0px 0px 10px 3px #acc8e0;
+}
+#icon_bank{
+background:url('../images/icons/bank.png') no-repeat;
+}
+#icon_market{
+background:url('../images/icons/market.png') no-repeat;
+}
+#icon_home{
+background:url('../images/icons/home.png') no-repeat;
+}
+#icon_trade{
+background:url('../images/icons/trade.png') no-repeat;
+}
+#icon_forum{
+background:url('../images/icons/forum.png') no-repeat;
+}
+#icon_ranking{
+background:url('../images/icons/ranking.png') no-repeat;
+}
+#list_header{
+box-shadow: inset 0px 0px 10px 3px #001c2c;
+-moz-box-shadow:inset 0px 0px 10px 3px #001c2c;
+-webkit-box-shadow:inset 0px 0px 10px 3px #001c2c;
+background-color:#00283f;
+height:40px;
+position:relative;
+top:15px;
+}
+#list_inner{
+height:450px;
+overflow:scroll;
+}
+#list_table,#stock_table {
+width:100%;
+margin-top:13px;
+}
+#list_table > tbody > tr:first-child,#stock_table > tbody > tr:first-child{
+height:35px;
+color:#134e80;
+background-color:#83c6ff;
+font-weight:bold;
+cursor:pointer;
+}
+#list_table > tbody > tr,#stock_table > tbody > tr{
+text-align:center;
+font-size:14px;
+color:#376f9f;
+}
+#list_table > tbody > tr,#stock_table > tbody > tr{
+width:100%;
+height:30px;
+}
+#cashinhand{
+background:url('../images/cashinhand.png') no-repeat;
+padding-left:170px;
+background-color:#d0e9ff;
+}
+#networth{
+background:url('../images/networth.png') no-repeat;
+padding-left:170px;
+background-color:#d0e9ff;
+}
+#yourrank{
+background:url('../images/yourrank.png') no-repeat;
+padding-left:170px;
+background-color:#d0e9ff;
+}
+.valuebox{
+margin:20px;
+left:85px;
+font-weight:bold;
+font-size:25px;
+color:#134e80;
+line-height:50px;
+border:1px solid #a7c2d9;
+box-shadow: 0px 0px 10px 3px #acc8e0;
+-moz-box-shadow:0px 0px 10px 3px #acc8e0;
+-webkit-box-shadow:0px 0px 10px 3px #acc8e0;
+width:300px;
+height:50px;
+position:relative;
+}
+#in_buyshares{
+height:48px;
+background:url('../images/buyshares.png') no-repeat;
+padding-left:170px;
+background-color:#d0e9ff;
+}
+#in_setquote{
+height:48px;
+padding-left:170px;
+background-color:#d0e9ff;
+background:url('../images/quote.png') no-repeat;
+}
+#in_setnumber{
+height:48px;
+padding-left:170px;
+background-color:#d0e9ff;
+background:url('../images/noofshares.png') no-repeat;
+margin:10px;
+}
+#in_quote_value{
+margin:10px;
+height:48px;
+padding-left:170px;
+background-color:#d0e9ff;
+background:url('../images/quotevalue.png') no-repeat;
+}
+#statistics_header{
+width:906px;
+height:77px;
+background:url('../images/icons/_statistics.png') no-repeat;
+}
+#stat_header_inner,#content_header_inner{
+font-weight:bold;
+font-size:25px;
+color:#134e80;
+line-height:55px;
+position:relative;
+left:95px;
+
+top:22px;
+height:55px;
+background-color:#83c6ff;
+}
+#homedata > #content_header
+{
+background:url('../images/icons/_home.png') no-repeat;
+}
+#marketdata > #content_header
+{
+background:url('../images/icons/_market.png') no-repeat;
+}
+#tradedata > #content_header
+{
+background:url('../images/icons/_trade.png') no-repeat;
+}
+#bankdata > #content_header
+{
+background:url('../images/icons/_bank.png') no-repeat;
+}
+#content_header{
+width:549px;
+height:77px;
+}
+#but_buy{
+background:url('../images/buy.png') no-repeat;
+}
+#but_sell{
+background:url('../images/sell.png') no-repeat;
+}
+#but_mortgage{
+background:url('../images/mortgage.png') no-repeat;
+}
+.but{
+width:160px;
+height:50px;
+border-color:#0e4079;
+margin:10px;
+}
+.but:hover{
+box-shadow: 0px 0px 10px 3px #acc8e0;
+-moz-box-shadow:0px 0px 10px 3px #68a0cc;
+-webkit-box-shadow:0px 0px 10px 3px #acc8e0;
+}
+#menu_left{
+background:url('../images/menu_left.png');
+width:12px;
+height:19px;
+float:right;
+margin-top:14px;
+margin-right:2px;
+}
+#menu_right{
+margin-top:14px;
+margin-right:5px;
+float:right;
+background:url('../images/menu_right.png');
+width:12px;
+height:19px;
+}
+#menu_left:hover{
+background-position:left bottom;
+}
+#menu_right:hover{
+background-position:left bottom;
+}
+#updates_inner{
+color:#00283f;
+line-height:31px;
+font-size:11px;
+float:left;
+margin-left:140px;
+width:320px;
+height:30px;
+margin-top:9px;
+}
+#updates_inner > label{
+opacity:0;
+-moz-opacity:0;
+filter: alpha(opacity=0);
+display:none;
+}
+#updates_inner > label:first-child{
+display:block;
+opacity:1.0;
+-moz-opacity:1.0;
+filter: alpha(opacity=100);
+}
+#stock_table{
+width:100%;
+margin-top:0px;
+}
+#home_stock{
+margin-left:140px;
+width:420px;
+height:152px;
+overflow:scroll;
+}
+#trade_stock{
+overflow:scroll;
+height:120px;
+width:100%;
+}
+#bank_stock{
+overflow:scroll;
+height:152px;
+width:100%;
+}
+#market_bg{
+background:url('../images/market_bg.jpg');
+width:643px;
+height:250px;
+text-align:center;
+}
+#market_bg > label{
+top:65px;
+position:relative;
+}
+#list_table > tbody > tr{
+cursor:pointer;
+}
+#company_details{
+position:relative;
+top:80px;
+}
+#marketdata > #but_buy{
+left:250px;
+position:relative;
+}
+#tradedata > #but_buy{
+left:150px;
+position:relative;
+}
+#tradedata > #but_sell{
+left:150px;
+position:relative;
+}
+.datas{
+display:none;
+}
+#trade_company{
+margin-top:10px;
+position:relative;
+left:200px;
+}
+#mortgage_company{
+position:relative;
+left:200px;
+margin-top:10px;
+}
+#bankdata > #but_mortgage{
+position:relative;
+left:250px;
+}
+#tradedata > .valuebox{
+margin:10px;
+}
+.trade_closer,.bank_closer{
+width:10px;
+height:10px;
+background-color:red;
+cursor:pointer;
+}
