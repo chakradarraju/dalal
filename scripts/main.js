@@ -65,7 +65,7 @@ $('#list_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
 $('#bank_stock > #stock_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
 $('.bank_closer').click(function(){
 comp_td=$(this).parent().parent().find('td');
-$.post("server/bank.php", { recover: "", mortgageId: $(comp_td[0]).attr('class')},
+$.post("server/bankdata.php", { recover: "", mortgageId: $(comp_td[0]).attr('class')},
 function(data) {
 	alert(data);
 });
@@ -194,7 +194,7 @@ function setbank(){
 $.ajax({
 	url: 'server/stockdata.php',
 	success: function(stockdata) {
-	$.post("server/bank.php", { list: ""},
+	$.post("server/bankdata.php", {},
 			function(banklist) {
 				setbank_stock(stockdata,banklist);
 			});
@@ -218,7 +218,7 @@ $.ajax({
 }
 
 $('#but_mortgage').click(function(){
-	$.post("server/bank.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), value: $('#bankdata > #in_quote_value').attr('value')},
+	$.post("server/bankdata.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), value: $('#bankdata > #in_quote_value').attr('value')},
 	function(data) {
 		alert(data);
 	});
