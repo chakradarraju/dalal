@@ -7,6 +7,27 @@
 <title>Dalal Street 2012</title>
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script type="text/javascript" src="scripts/main.js"></script>
+<?php
+session_start();
+$alert = "";
+if(isset($_SESSION['message'])) {
+    $alert = $_SESSION['message'];
+    unset($_SESSION['message']);
+}
+if(isset($_SESSION['error'])) {
+    $alert = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
+if($alert!="") {
+?>
+<script type="text/javascript">
+$(function() {
+    alert('<?php echo $alert; ?>');
+});
+</script>
+<?php
+}
+?>
 <link rel="shortcut icon" href="images/favicon.ico" >
 <link href="styles/main.css" rel="stylesheet"></link>
 </head>
