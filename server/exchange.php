@@ -9,11 +9,13 @@ require_once("common.php");
  * return status of the buy request as string
  **/
 function buy($stockId,$num,$value) {
+    $buyId = getLoggedInUserId();
+    if($buyId==-1) return array("error" => "Your session expired<br />Please login again");
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $buyId = getLoggedInUserId();
     $marketValue = getMarketValue($stockId);
+    if($marketValue==-1) return array("error" => "Some error in checking market value");
     $query = "SELECT `sellId`,`userId`,`num`,`value` FROM `sell` WHERE `stockId` = '{$stockId}' ORDER BY `value` ASC";
     $result = mysql_query($query);
     $cutoff = 1 + CUTOFF_PERCENT/100.0;
@@ -63,11 +65,13 @@ function buy($stockId,$num,$value) {
  * return status of the buy request as string
  **/
 function sell($stockId,$num,$value) {
+    $sellId = getLoggedInUserId();
+    if($sellId==-1) return array("error" => "Your session expired<br /> Please login again");
     $result = mysql_query("START TRANSACTION;");
     if(!$result) return "Database error";
     $Cnum = $num;
-    $sellId = getLoggedInUserId();
     $marketValue = getMarketValue($stockId);
+    if($marketValue==-1) return array("error" => "Some error in checking market value");
     $cutoff = 1 - CUTOFF_PERCENT/100.0;
     if($value<$cutoff*$marketValue) {
         $cur_value = ($value+$cutoff*$marketValue)/2;
@@ -149,12 +153,14 @@ QUERY;
 
 function buyFromExchange($shareId, $number) {
     $userId = getLoggedInUserId();
+    if($userId==-1) return array("error" => "Your session expired<br />Please login again");
     $result = mysql_query("SELECT `name`,`exchangePrice`,`sharesInExchange` FROM `stocks` WHERE `stockId` = '{$shareId}'");
     $numToBuy = $number;
     $message = "";
     if($row = mysql_fetch_assoc($result)) {
         $sharesInHand = sharesInHand($userId,$shareId);
         $cashInHand = cashInHand($userId);
+        if($cashInHand==-1) return array("error" => "Some error in checking your cash in hand");
         if($row['sharesInExchange']<$number) {
             $numToBuy = $row['sharesInExchange'];
             if($numToBuy>0) {

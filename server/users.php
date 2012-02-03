@@ -89,7 +89,8 @@ function userIdExists($userId) {
 function cashInHand($userId) {
     if($userId==THE_TRADER) return 10000000;
     $query = "SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'cashInHand'";
-    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
+    $result = mysql_query($query);
+    if(!$result) return -1;
     if($row = mysql_fetch_assoc($result)) return $row['value'];
     return -1;
 }

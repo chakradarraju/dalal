@@ -36,6 +36,7 @@ if($_GET['state']==$_SESSION['state']) {
     }
     loginOAuth($user['id'],"facebook");
     $userId = getLoggedInUserId();
+    die(json_encode(array("error" => "Error while Logging in")));
     if($row===false) {
         mysql_query("INSERT INTO `users_data` VALUES('{$userId}',NULL,'Display Name','{$user['name']}')");
         mysql_query("INSERT INTO `users_data` VALUES('{$userId}',NULL,'cashInHand','".CASH_IN_HAND."')");

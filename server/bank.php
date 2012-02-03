@@ -5,6 +5,7 @@ require_once("common.php");
 
 function mortgage($stockId, $number, $value) {
     $userId = getLoggedInUserId();
+    if($userId==-1) return array("error" => "Your session expired<br />Please login again");
     $result = mysql_query("SELECT `marketValue` FROM `stocks` WHERE `stockId` = '{$stockId}'");
     if($row = mysql_fetch_assoc($result)) {
         $marketValue = $row['marketValue'];
@@ -12,6 +13,7 @@ function mortgage($stockId, $number, $value) {
         return array("error" => "stock not found in database");
     }
     $numberInHand = sharesInHand($userId, $stockId);
+    if($numberInHand==-1) return array("error" => "Some error in checking number of shares you hold");
     if($numberInHand<$number) {
         return array("error" => "You dont have enough shares");
     }
@@ -34,6 +36,7 @@ QUERY;
 
 function recover($mortgageId) {
     $userId = getLoggedInUserId();
+    if($userId==-1) return array("error" => "Your session expired<br />Please login again");
     $result = mysql_query("SELECT * FROM `bank` WHERE `mortgageId` = '{$mortgageId}'");
     if($row = mysql_fetch_assoc($result)) {
         if($row['userId']!=$userId) {
@@ -43,7 +46,9 @@ function recover($mortgageId) {
     } else {
         return array("message" => "Mortgage not found in database");
     }
-    if(cashInHand($userId)<$mortgage['loanValue']) {
+    $cashInHand = cashInHand($userId);
+    if($cashInHand==-1) return array("error" => "Some error in checking your cash in hand");
+    if($cashInHand<$mortgage['loanValue']) {
         return array("error" => "Not enough cash to pay off the mortgage");
     }
     $query =<<<QUERY
@@ -62,6 +67,7 @@ QUERY;
 
 function getUserMortgages($userId = NULL) {
     if($userId===NULL) $userId = getLoggedInUserId();
+    if($userId==-1) return array("error" => "Your session expired<br /> Please login again");
     $result = mysql_query("SELECT `mortgageId`, `stockId`, `number`, `loanValue` FROM `bank` WHERE `userId` = '{$userId}'");
     $return = array();
     while($row = mysql_fetch_assoc($result)) {
