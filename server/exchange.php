@@ -12,7 +12,7 @@ function buy($stockId,$num,$value) {
     $buyId = getLoggedInUserId();
     if($buyId==-1) return array("error" => "Your session expired<br />Please login again");
     $result = mysql_query("START TRANSACTION;");
-    if(!$result) return "Database error";
+    if(!$result) return array("error" => "Database error");
     $Cnum = $num;
     $marketValue = getMarketValue($stockId);
     if($marketValue==-1) return array("error" => "Some error in checking market value");
@@ -26,9 +26,8 @@ function buy($stockId,$num,$value) {
         $tradeResult = trade($row['userId'],$buyId,$stockId,$cur_num,$cur_value);
         if($tradeResult==1) {
             $num -= $cur_num;
-            $row['num'] -= $cur_num;
-            if($row['num']>0) {
-                $query = "UPDATE `sell` SET `num` = '{$row['num']}' WHERE `sellId` = '{$row['sellId']}'";
+            if($row['num']>$cur_num) {
+                $query = "UPDATE `sell` SET `num` = `num` - '{$cur_num}' WHERE `sellId` = '{$row['sellId']}'";
             } else {
                 $query = "DELETE FROM `sell` WHERE `sellId` = '{$row['sellId']}'";
             }
@@ -40,23 +39,22 @@ function buy($stockId,$num,$value) {
         $cur_value = ($value+$cutoff*$marketValue)/2;
         $tradeResult = trade(THE_TRADER,$buyId,$stockId,$num,$cur_value);
         if($tradeResult==1) $num = 0;
-        else return "Bought ".($Cnum-$num);
+        else return array("message" => ("Bought ".($Cnum-$num)));
     }
     if($num>0) {
         $insQuery = "INSERT INTO `buy` VALUES(NULL,'{$buyId}','{$stockId}','{$num}','{$value}')";
         $insResult = mysql_query($insQuery);
-        if(!$insResult) {
-            mysql_query("ROLLBACK");
-        } else {
-            $traded = $Cnum-$num;
-        }
-		if(!$insResult) $returnString = "Bought {$traded}, couldn't place more orders, try again later";
+        $traded = $Cnum-$num;
+        if(!$insResult) $returnString = "Bought {$traded}, couldn't place more orders, try again later";
         else $returnString =  "Bought {$traded}, and placed order for {$num} at the rate of {$value}";
     }
     $result = mysql_query("COMMIT;");
-    if(!$result) mysql_query("ROLLBACK");
-    if($returnString) return $returnString;
-    return "Bought {$Cnum}";
+    if(!$result) {
+        mysql_query("ROLLBACK");
+        return array("error" => "Unknown error");
+    }
+    if($returnString) return array("message" => $returnString);
+    return array("message" => "Bought {$Cnum}");
 }
 
 /**
@@ -68,7 +66,7 @@ function sell($stockId,$num,$value) {
     $sellId = getLoggedInUserId();
     if($sellId==-1) return array("error" => "Your session expired<br /> Please login again");
     $result = mysql_query("START TRANSACTION;");
-    if(!$result) return "Database error";
+    if(!$result) return array("error" => "Database error");
     $Cnum = $num;
     $marketValue = getMarketValue($stockId);
     if($marketValue==-1) return array("error" => "Some error in checking market value");
@@ -88,9 +86,8 @@ function sell($stockId,$num,$value) {
         $tradeResult = trade($sellId,$row['userId'],$stockId,$cur_num,$cur_value);
         if($tradeResult==1) {
             $num -= $cur_num;
-            $row['num'] -= $cur_num;
-            if($row['num']>0) {
-                $query = "UPDATE `buy` SET `num` = '{$row['num']}' WHERE `buyId` = '{$row['buyId']}'";
+            if($row['num']>$cur_num) {
+                $query = "UPDATE `buy` SET `num` = `num` - '{$cur_num}' WHERE `buyId` = '{$row['buyId']}'";
             } else {
                 $query = "DELETE FROM `buy` WHERE `buyId` = '{$row['buyId']}'";
             }
@@ -101,15 +98,17 @@ function sell($stockId,$num,$value) {
     if($num>0) {
         $insQuery = "INSERT INTO `sell` VALUES(NULL,'{$sellId}','{$stockId}','{$num}','{$value}')";
         $insResult = mysql_query($insQuery);
-        if(!$insResult) {
-            mysql_query("ROLLBACK");
-            return "Rolled back";
-        }
         $traded = $Cnum-$num;
+        if(!$insResult) $returnString = "Sold {$traded}, couldn't place more orders, try again later";
+        else $returnString = "Sold {$traded}, and placed order for {$num} at the rate of {$value}";
     }
     $result = mysql_query("COMMIT;");
-    if(!$result) mysql_query("ROLLBACK");
-    return "Sold {$Cnum}";
+    if(!$result) {
+        mysql_query("ROLLBACK");
+        return array("error" => "Unknown error");
+    }
+    if($returnString) return array("message" => $returnString);
+    return array("message" => "Sold {$Cnum}");
 }
 
 /**
@@ -120,6 +119,7 @@ function sell($stockId,$num,$value) {
  * return -1 in case of any error
  **/
 function trade($fromId,$toId,$stockId,$num,$value) {
+    if($fromId==$toId) return -1;
     if(!userIdExists($fromId)||!userIdExists($toId)||!stockIdExists($stockId)) return "Invalid inputs";
     $fromCash = cashInHand($fromId);
     $toCash = cashInHand($toId);
