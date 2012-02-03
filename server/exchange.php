@@ -192,34 +192,4 @@ QUERY;
     }
 }
 
-if(getLoggedInUserId()==-1) {
-    $error['error'] = "Your session expired<br />Please login again";
-    die(json_encode($error));
-}
-
-if(isset($_POST['trade'])) {
-    $shareId = mysql_real_escape_string($_POST['shareId']);
-    $number = mysql_real_escape_string($_POST['number']);
-    $trade = mysql_real_escape_string($_POST['trade']);
-    $rate = mysql_real_escape_string($_POST['rate']);
-    $supportedTrade = array("buy","sell");
-    if(!Is_Numeric($shareId)||!Is_Numeric($number)||!Is_Numeric($rate)||!in_array($trade,$supportedTrade)) {
-        $error['error'] = "Invalid request";
-        die(json_encode($error));
-    }
-    $result = $trade($shareId,$number,$rate);
-    die(json_encode($result));
-}
-
-if(isset($_POST['buyFromExchange'])) {
-    $shareId = mysql_real_escape_string($_POST['shareId']);
-    $number = mysql_real_escape_string($_POST['number']);
-    if(!Is_Numeric($shareId)||!Is_Numeric($number)) {
-        $error['error'] = "Invalid request";
-        die(json_encode($error));
-    }
-    $result = buyFromExchange($shareId,$number);
-    die(json_encode($result));
-}
-
 ?>

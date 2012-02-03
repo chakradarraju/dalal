@@ -89,7 +89,7 @@ trade_company+="<option value=\""+stockdata[x]["stockId"]+"\">"+stockdata[x]["na
 $("#trade_stock > #stock_table > tbody").html(stock_tbody);
 $('.trade_closer').click(function(){
 comp_td=$(this).parent().parent().find('td');
-$.post("server/queuedata.php", { cancelOrder: "", type: $(comp_td[3]).html(), orderId: $(comp_td[0]).attr('class')},
+$.post("server/trade.php", { cancelOrder: "", type: $(comp_td[3]).html(), orderId: $(comp_td[0]).attr('class')},
 function(data) {
 	alert(data);
 });
@@ -130,14 +130,14 @@ $.ajax({
 }
 
 $('#tradedata > #but_buy').click(function(){
-	$.post("server/exchange.php", { trade: "buy", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
+	$.post("server/trade.php", { trade: "buy", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
 	function(data) {
 		alert(data);
 	});
 });
 
 $('#tradedata > #but_sell').click(function(){
-	$.post("server/exchange.php", { trade: "sell", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
+	$.post("server/trade.php", { trade: "sell", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
 	function(data) {
 		alert(data);
 	});
@@ -183,7 +183,7 @@ $.ajax({
 }
 
 $('#marketdata > #but_buy').click(function(){
-			$.post("server/exchange.php", { buyFromExchange: "true", shareId: stockdata[ref_x]["stockId"], number: $('#marketdata > #in_buyshares').attr('value')},
+			$.post("server/trade.php", { buyFromExchange: "true", shareId: stockdata[ref_x]["stockId"], number: $('#marketdata > #in_buyshares').attr('value')},
 			function(data) {
 				//alert($(this).parent().html());
 				alert(data);
@@ -207,7 +207,7 @@ $.ajax({
   url: 'server/stockdata.php',
   success: function(stockdata) {
 	$.ajax({
-		url: 'server/queuedata.php',
+		url: 'server/trade.php',
 		success: function(queuedata) {
 		settrade_stock(stockdata,queuedata);
 		}
