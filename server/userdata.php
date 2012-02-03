@@ -29,7 +29,7 @@ if($getDetail=="portfolio") {
             if($row['key']=="graph_point") {
                 $userDetail['graph'][$row['time']] = $row['value'];
             } else if(stockIdExists($row['key'])) {
-                $userDetail['stocks'][$row['key']] = $row['value'];
+                if($row['value']>0) $userDetail['stocks'][$row['key']] = $row['value'];
             } else {
                 $userDetail[$row['key']] = $row['value'];
             }

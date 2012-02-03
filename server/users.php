@@ -4,11 +4,11 @@ require_once("db.php");
 
 function register($userName,$password) {
     $query = "SELECT `userName` from `users` where `userName` = '{$userName}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if(!mysql_fetch_assoc($result)) {
         $password = md5($password);
         $query = "INSERT INTO `users` VALUES(NULL,'{$userName}','{$password}',0)";
-        $result = mysql_query($query) or die($query);
+        $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
         $useridresult = mysql_query("SELECT `userId` FROM `users` WHERE `userName` = '{$userName}'");
         $useridrow = mysql_fetch_assoc($useridresult);
         $userId = $useridrow['userId'];
@@ -34,7 +34,7 @@ function getLoggedInUserId() {
 
 function logindb($userName,$password) {
     $query = "SELECT `userId`,`password` FROM `users` WHERE `userName` = '{$userName}' AND `loginMethod` = 'db'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if(!$result) return array("error" => "Wrong username, '{$userName}'");
     $row = mysql_fetch_assoc($result);
     if($row['password']!=md5($password)) return array("error" => "Wrong password");
@@ -45,7 +45,7 @@ function logindb($userName,$password) {
 
 function loginOAuth($oauthId,$oauthProvider) {
     $query = "SELECT * FROM `users` WHERE `userName` = '{$oauthProvider}' AND `password` = '{$oauthId}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if(!$result) return array("error" => "User not found in database");
     $row = mysql_fetch_assoc($result);
     session_start();
@@ -60,18 +60,18 @@ function logout() {
 
 function changePassword($userName,$password) {
     $query = "SELECT `userName` FROM `users` WHERE `userName` = '{$userName}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if(!$result) return array("error" => "Wrong username, '{$userName}'");
     $password = md5($password);
     $query = "UPDATE `users` SET `password` = '{$password}' WHERE `userName` = '{$userName}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if(!$result) return array("error" => "Error in changing password, try again later");
     return array("message" => "Password successfully changed");
 }
 
 function userExists($userName) {
     $query = "SELECT `userName` FROM `users` WHERE `userName` = '{$userName}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if($result===NULL) return false;
     if(mysql_num_rows($result)>0) return true;
     else return false;
@@ -80,7 +80,7 @@ function userExists($userName) {
 function userIdExists($userId) {
     if($userId==THE_TRADER) return true;
     $query = "SELECT `userId` FROM `users` WHERE `userId` = '{$userId}'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if($result===NULL) return false;
     if(mysql_num_rows($result)>0) return true;
     else return false;
@@ -89,7 +89,7 @@ function userIdExists($userId) {
 function cashInHand($userId) {
     if($userId==THE_TRADER) return 10000000;
     $query = "SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'cashInHand'";
-    $result = mysql_query($query) or die($query);
+    $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));
     if($row = mysql_fetch_assoc($result)) return $row['value'];
     return -1;
 }

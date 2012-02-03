@@ -1,7 +1,7 @@
 <?php
 require_once("users.php");
 require_once("stock.php");
-require_once("exchange.php");
+require_once("common.php");
 
 function mortgage($stockId, $number, $value) {
     $userId = getLoggedInUserId();

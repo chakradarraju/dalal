@@ -1,6 +1,7 @@
 <?php
 require_once("users.php");
 require_once("stock.php");
+require_once("common.php");
 
 /**
  * function buy(stockId,num,value)
@@ -72,7 +73,7 @@ function sell($stockId,$num,$value) {
         $cur_value = ($value+$cutoff*$marketValue)/2;
         $tradeResult = trade($sellId,THE_TRADER,$stockId,$num,$cur_value);
         if($tradeResult==1) $num = 0;
-        else return "Error processing order";
+        else return array("error" => "Error processing order");
     }
     $query = "SELECT `buyId`,`userId`,`num`,`value` FROM `buy` WHERE `stockId` = '{$stockId}' ORDER BY `value` DESC";
     $result = mysql_query($query);
@@ -144,23 +145,6 @@ QUERY;
     $failed = runQueries($query);
     if($failed) return -1;
     return 1;
-}
-
-function runQueries($query) {
-    $singlequeries = explode(";\n",$query);
-    $failed = false;
-    foreach($singlequeries as $singlequery) {
-        if(trim($singlequery)!="") {
-            $result = mysql_query($singlequery);
-            if(!$result) {
-                //record mysql_error(); ::: IMPORTANT
-                mysql_query("ROLLBACK") or die(mysql_error());
-                $failed = true;
-                break;
-            }
-        }
-    }
-    return $failed;
 }
 
 function buyFromExchange($shareId, $number) {
