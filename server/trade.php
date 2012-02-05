@@ -53,6 +53,7 @@ if(isset($_POST['cancelOrder'])) {
     }
 }
 
+$userId = getLoggedInUserId();
 $result = mysql_query("SELECT * FROM `buy` WHERE `userId` = '{$userId}'");
 $return = array();
 while($row = mysql_fetch_assoc($result)) {
