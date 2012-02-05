@@ -1,7 +1,8 @@
 <?php
 require_once("exchange.php");
 
-if(getLoggedInUserId()==-1) {
+$userId = getLoggedInUserId();
+if($userId==-1) {
     $error['error'] = "Your session expired<br />Please login again";
     die(json_encode($error));
 }
@@ -53,7 +54,6 @@ if(isset($_POST['cancelOrder'])) {
     }
 }
 
-$userId = getLoggedInUserId();
 $result = mysql_query("SELECT * FROM `buy` WHERE `userId` = '{$userId}'");
 $return = array();
 while($row = mysql_fetch_assoc($result)) {
