@@ -90,8 +90,6 @@ $(function() {
 <input type="text" class="valuebox" id="in_buyshares">
 <br />
 <input type="button" class="but" disabled=false id="but_buy">
-<!--<input type="button" class="but" id="but_sell">
-<input type="button" class="but" id="but_mortgage">-->
 </div>
 <div class="datas" id="tradedata">
 <div id="content_header">
@@ -112,6 +110,15 @@ $(function() {
 <!--<input type="button" class="but" id="but_sell">
 <input type="button" class="but" id="but_mortgage">-->
 </div>
+<div class="datas" id="rankdata">
+<div id="ranktable_outer">
+<table id="rank_table">
+<tbody>
+<tr><td>Rank</td><td>Names</td><td>Net Worth</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="datas" id="bankdata">
 <div id="content_header">
 <div id="content_header_inner">BANK</div>
@@ -119,11 +126,11 @@ $(function() {
 <div id="bank_stock">
 <table id="stock_table">
 <tbody>
-<tr title="sort"><td>Company Name</td><td>Shares</td><td>Value/share</td><td>(take back?)</td></tr>
+<tr title="sort"><td>Company Name</td><td>Shares</td><td>Net value</td><td>(take back?)</td></tr>
 </tbody>
 </table>
 </div>
-<div id="mortgage_company">Select Company : <select></select></div>
+<div id="mortgage_company">Select Company : <select></select><label id="mortgage_max">Maximum Value : NA<label></div>
 <input type="text" class="valuebox" id="in_setnumber"><br />
 <input type="text" class="valuebox" id="in_quote_value"><br />
 <input type="button" class="but" id="but_mortgage">

@@ -48,9 +48,9 @@ if($getDetail=="portfolio") {
             if($row['holdings']!==NULL) $holdings = $row['holdings'];
             $users[$row['userId']]['holdings'] = $holdings;
         }
-        $result = mysql_query("SELECT `userId`, `value` FROM `users_data` WHERE `key` = 'cashInHand'");
+        $result = mysql_query("SELECT `userId`, `key`, `value` FROM `users_data` WHERE `key` = 'cashInHand' OR `key` = 'Display Name'");
         while($row = mysql_fetch_assoc($result)) {
-            $users[$row['userId']]['cashInHand'] = $row['value'];
+            $users[$row['userId']][$row['key']] = $row['value'];
         }
         $ranklist = array();
         foreach($users as $userId => $user) {
