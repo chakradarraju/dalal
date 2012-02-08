@@ -32,6 +32,15 @@ function getLoggedInUserId() {
     return $_SESSION['userId'];
 }
 
+function getLoggedInUserName() {
+    session_start();
+    if(!isset($_SESSION['userId'])) return "";
+    $userId = $_SESSION['userId'];
+    $result = mysql_query("SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'Display Name'");
+    if($row = mysql_fetch_assoc($result)) return $row['value'];
+    return "";
+}
+
 function logindb($userName,$password) {
     $query = "SELECT `userId`,`password` FROM `users` WHERE `userName` = '{$userName}' AND `loginMethod` = 'db'";
     $result = mysql_query($query) or die(json_encode(array("error" => "Database error")));

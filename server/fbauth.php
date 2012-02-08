@@ -7,7 +7,8 @@ session_start();
 
 $userId = getLoggedInUserId();
 if($userId!=-1) {
-    $_SESSION['message'] = "User already logged in!";
+    $userName = getLoggedInUserName();
+    $_SESSION['message'] = "User already logged in as {$userName}!";
     header("Location: ../");
 }
 
@@ -77,9 +78,10 @@ if(isset($_GET['code'])) {
                 $_SESSION['message'] = "User account seems to have been created recently, contact event managers to verify account";
                 header("Location: ../index.php");
             }
+        } else {
+            $_SESSION['message'] = "User {$user['name']}, successfully logged in";
+            header("Location: ../index.php");
         }
-        $_SESSION['message'] = "User {$user['name']}, successfully logged in";
-        header("Location: ../index.php");
     } else {
         $_SESSION['message'] = "Something went wrong";
         header("Location: ../index.php");

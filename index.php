@@ -2,7 +2,7 @@
 require_once("server/users.php");
 $userId = getLoggedInUserId();
 if($userId==-1) {
-    header("Location: ./server/fbauth.php");
+    header("Location: ./login.php");
 }
 ?>
 <!-- Wartortle Template by Dinesh Prasanth <mail2dineshnow@gmail.com> -->
