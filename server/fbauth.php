@@ -48,7 +48,7 @@ if(isset($_GET['code'])) {
             header("Location: ../index.php");
         }
         if($row===false) {
-            mysql_query("INSERT INTO `users_data` VALUES('{$userId}',NULL,'Display Name','{$user['name']}')");
+            mysql_query("INSERT INTO `users_data` VALUES('{$userId}',NULL,'Display_Name','{$user['name']}')");
             $details = getDefaultDetails();
             foreach($details as $detail => $value) {
                 mysql_query("INSERT INTO `users_data` VALUES('{$userId}',NULL,'{$detail}','{$value}')");

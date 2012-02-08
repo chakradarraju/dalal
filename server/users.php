@@ -36,7 +36,7 @@ function getLoggedInUserName() {
     session_start();
     if(!isset($_SESSION['userId'])) return "";
     $userId = $_SESSION['userId'];
-    $result = mysql_query("SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'Display Name'");
+    $result = mysql_query("SELECT `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` = 'Display_Name'");
     if($row = mysql_fetch_assoc($result)) return $row['value'];
     return "";
 }
@@ -121,6 +121,35 @@ function sharesInHand($userId,$stockId) {
     }
     $row = mysql_fetch_assoc($result);
     return $row['value'];
+}
+
+function isUserProfileFilled($userId) {
+    $profileFields = PROFILE_FIELDS;
+    $result = mysql_query("SELECT COUNT(DISTINCT(`key`)) AS 'count' FROM `users_data` WHERE `userId` = '{$userId}' AND `key` IN ({$profileFields})");
+    if($row = mysql_fetch_assoc($result)) {
+        $brokenFields = explode(",",$profileFields);
+        return $row['count']>=count($brokenFields);
+    }
+    return false;
+}
+
+function getProfileForm($userId) {
+    $profileFields = PROFILE_FIELDS;
+    $brokenFields = explode(",",$profileFields);
+    $fieldValues = array();
+    $result = mysql_query("SELECT `key`, `value` FROM `users_data` WHERE `userId` = '{$userId}' AND `key` IN ({$profileFields})");
+    while($row = mysql_fetch_assoc($result)) {
+        $fieldValues[$row['key']] = $row['value'];
+    }
+    $return = "<form action='./server/profileSubmit.php' method=POST>";
+    foreach($brokenFields as $field) {
+        $field = trim($field,"'");
+        $thisFieldValue = "";
+        if(isset($fieldValues[$field])) $thisFieldValue = $fieldValues[$field];
+        $return .= "\n{$field}: <input type='text' name='{$field}' value='{$thisFieldValue}' /><br/>";
+    }
+    $return .= "\n<input type='submit' name='saveProfile' value='Save Profile' />";
+    return $return;
 }
 
 function getUserHiddenDetails() {

@@ -122,7 +122,7 @@ if(rankdata[x]["userId"]==userid)
 
 function sethome_user(userdata1){
 userdata = jQuery.parseJSON(userdata1);
-$('#homedata > label').html("Welcome home "+userdata['Display Name']+" !!");
+$('#homedata > label').html("Welcome home "+userdata['Display_Name']+" !!");
 $('#cashinhand').html(userdata['cashInHand']);
 $.ajax({
   url: 'server/userdata.php?getDetail=ranklist',
@@ -249,7 +249,7 @@ function set_rankingtable(ranklist1){
 ranklist = jQuery.parseJSON(ranklist1);
 rank_table = "<tr><td>Rank</td><td>Names</td><td>Net Worth</td></tr>";
 for(x in ranklist){
-rank_table+="<tr><td>"+ranklist[x]['rank']+"</td><td>"+ranklist[x]['Display Name']+"</td><td>"+ranklist[x]['totalWorth']+"</td></tr>";
+rank_table+="<tr><td>"+ranklist[x]['rank']+"</td><td>"+ranklist[x]['Display_Name']+"</td><td>"+ranklist[x]['totalWorth']+"</td></tr>";
 }
 $('#ranktable_outer > #rank_table > tbody').html(rank_table);
 $('#ranktable_outer > #rank_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});

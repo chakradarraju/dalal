@@ -14,6 +14,12 @@ if($userId==-1) {
 <title>Dalal Street 2012</title>
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script type="text/javascript" src="scripts/main.js"></script>
+<script type="text/javascript" src="scripts/jquery-ui-1.8.17.custom.min.js"></script>
+<link rel="shortcut icon" href="images/favicon.ico" >
+<link href="styles/main.css" rel="stylesheet"></link>
+<link href="styles/start/jquery-ui-1.8.17.custom.css" rel="stylesheet"></link>
+</head>
+<body>
 <?php
 session_start();
 $alert = "";
@@ -26,19 +32,30 @@ if(isset($_SESSION['error'])) {
     unset($_SESSION['error']);
 }
 if($alert!="") {
-?>
-<script type="text/javascript">
+    $js = "
+<script type='text/javascript'>
 $(function() {
-    alert('<?php echo $alert; ?>');
+    alert('{$alert}');
 });
 </script>
-<?php
+";
+    echo $js;
+}
+if(!isUserProfileFilled($userId)) {
+    echo "<div id='dialog' style='display:none' title='Please complete your profile'>";
+    echo getProfileForm($userId);
+    echo "</div>";
+    $js = "
+<script type='text/javascript'>
+$(function() {
+    $('#dialog').hide();
+    $('#dialog').dialog();
+});
+</script>
+";
+    echo $js;
 }
 ?>
-<link rel="shortcut icon" href="images/favicon.ico" >
-<link href="styles/main.css" rel="stylesheet"></link>
-</head>
-<body>
 <div id="header">
 <div id="header_title"></div>
 <div id="header_buttons" class="button_font">
