@@ -30,6 +30,11 @@ if(isset($_GET['code'])) {
         $forToken = @file_get_contents("https://graph.facebook.com/oauth/access_token?client_id=$appId&redirect_uri=" . urlencode($myURL) . "&client_secret=$appSecret&code=$code");
         $params = NULL;
         parse_str($forToken,$params);
+        if(!isset($params['access_token'])) {
+            $_SESSION['error'] = "Not able to contact facebook server, try again after sometime";
+            header("Location: ../index.php");
+            goto endPtr;
+        }
         $accessToken = $params['access_token'];
         $user = fbGet("me",$accessToken);
         $result = mysql_query("SELECT * FROM `users` WHERE `loginMethod` = 'oauth' AND `userName` = 'facebook' AND `password` = '{$user['id']}'");
@@ -90,4 +95,5 @@ if(isset($_GET['code'])) {
     $_SESSION['state'] = md5(uniqid(rand(), TRUE));
     echo("<script> top.location.href='http://www.facebook.com/dialog/oauth?client_id=$appId&redirect_uri=" . urlencode($myURL) . "&state={$_SESSION['state']}&scope=read_stream' </script>");
 }
+endPtr:
 ?>
