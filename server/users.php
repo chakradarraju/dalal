@@ -59,6 +59,7 @@ function loginOAuth($oauthId,$oauthProvider) {
     $row = mysql_fetch_assoc($result);
     session_start();
     $_SESSION['userId'] = $row['userId'];
+    $userName = getLoggedInUserName();
     return array("message" => "User {$userName}, successfully logged in");
 }
 
