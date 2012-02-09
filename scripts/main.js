@@ -26,7 +26,6 @@ $('#'+up).css({'display':'block','opacity':'1'});
 function sethome_stock(stockdata1,userdata){
 stockdata = jQuery.parseJSON(stockdata1);
 stock = userdata["stocks"];
-//alert(stockdata1+"<br>");
 var prop = 0;
 stock_tbody="<tr title=\"sort\"><td>Company Name</td><td>Shares</td></tr>";
 company_tbody = "<tr title=\"sort\"><td>Company Name</td><td>Share Rate</td></tr>";

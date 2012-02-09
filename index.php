@@ -20,6 +20,9 @@ if($userId==-1) {
 <link href="styles/start/jquery-ui-1.8.17.custom.css" rel="stylesheet"></link>
 </head>
 <body>
+<div id='dialog' style='display:none' title='Your profile'>
+<?php echo getProfileForm($userId); ?>
+</div>
 <?php
 session_start();
 $alert = "";
@@ -42,13 +45,9 @@ $(function() {
     echo $js;
 }
 if(!isUserProfileFilled($userId)) {
-    echo "<div id='dialog' style='display:none' title='Please complete your profile'>";
-    echo getProfileForm($userId);
-    echo "</div>";
     $js = "
 <script type='text/javascript'>
 $(function() {
-    $('#dialog').hide();
     $('#dialog').dialog();
 });
 </script>
@@ -59,8 +58,9 @@ $(function() {
 <div id="header">
 <div id="header_title"></div>
 <div id="header_buttons" class="button_font">
-<div id="logout">Help</div>
-<div id="logout">Logout</div>
+<div id="help"><a style="color:#4E78AC;text-decoration:none" href='./server/help.php'>Help</a></div>
+<div id="logout"><a style="color:#4E78AC;text-decoration:none" href='./server/logout.php'>Logout</a></div>
+<div id="editprofile"><a style="color:#4E78AC;text-decoration:none" onclick="$('#dialog').dialog()">Edit Profile</a></div>
 </div>
 </div>
 <div id="outer_container">
