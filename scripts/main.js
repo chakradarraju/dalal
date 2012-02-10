@@ -118,7 +118,130 @@ if(rankdata[x]["userId"]==userid)
 	$('#yourrank').html(rankdata[x]["rank"]);
 }
 }
-
+function yuigraphs(yuigraph,m,n)
+		{
+				n1=parseInt(n)+500
+				YUI().use('charts',function(Y){
+				 var styleDef = {
+        axes:{
+            category:{
+                label:{
+                    rotation:-45,
+                    color: "#000"
+                }
+			},
+			values:{
+			type:"numeric",
+			label:{
+				color: "#000"
+			}
+			}
+				},
+		series:{
+			series1:{
+			marker:{
+				
+				 fill:{
+                            color:"#FFC125"
+                        },
+                        border:{
+                            color:"#999"
+                        },
+                        over:{
+                            fill:{
+                                color:"#FFFF00"
+                            },
+                            border:{
+                                color:"#FFA500"
+                            },
+                            width: 12,
+                            height: 12
+                        }
+                    },
+                    line:{
+                        color:"#FF3030"
+                    },			
+			}
+			}
+		};
+			var myTooltip = {
+            styles: { 
+                backgroundColor: "#333",
+                color: "#eee",
+                borderColor: "#fff",
+                textAlign: "center"
+            },
+            markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex)
+            {
+                var msg = "<span>" + "value" + " at " + 
+                categoryItem.axis.get("labelFunction").apply(this, [categoryItem.value, categoryItem.axis.get("labelFormat")]) + 
+                "</span><br/><div>" + valueItem.axis.get("labelFunction").apply(this, [valueItem.value, {prefix:"$", decimalPlaces:2}]) + "</div>";
+             
+			 return msg; 
+            }
+        };
+				var mychart= new Y.Chart({
+				dataProvider: yuigraph,
+				styles: styleDef,
+				horizontalGridlines:true, 
+                verticalGridlines:true,
+				tooltip: myTooltip,
+//				categoryKey:"date", 
+//				categoryType:"time",
+				render: "#graph_container"
+				})
+	//			mytimeaxis=mychart.getAxisByKey("category");
+		//		mytimeaxis.set("labelFunctionScope",mychart);
+	
+				mynumericaxis = mychart.getAxisByKey("values");
+				mynumericaxis.set("labelFunctionScope", mychart);
+				mynumericaxis.set("minimum",m-500);
+				mynumericaxis.set("maximum",n1);
+				//mynumericaxis.set("categoryAxisName","value");
+				mynumericaxis._drawAxis();
+				;	
+				});
+		}
+		function getjson()
+		{	var container=document.getElementById("graph_container");
+			container.innerHTML='';
+		    $.getJSON("server/userdata.php", function(json){
+			console.log(json.graph);
+			var yuigraph = JSON.stringify(json.graph);
+			var j = 0;
+			 var arr = [];
+			for (var i=0;i<2;i++) {
+			arr[i] = [];
+  }
+			k1=0
+			var data=$.parseJSON(yuigraph);
+			$.each(data, function(key, value) {
+				var key1=key.substring(11,key.length)
+				/*var key2=key1.substring(0,2)
+				var key3=key1.substring(3,5);
+				var key4=key1.substring(6,key1.length);
+				var key5=parseInt(key2)*3600+parseInt(key3)*60+parseInt(key4)*/
+				arr[0][j]=key1;
+				arr[1][j]=value;
+				if(k1==0)
+				{
+					m=value
+					n=value
+					k1=1
+				}
+				else
+				{
+				if(value < m)
+					m=value
+				if(value > n)
+					n=value
+				}
+				j=j+1;
+			});
+		//		alert(yuigraph);
+			yuigraphs(arr,m,n);	
+		});
+		}
 function sethome_user(userdata1){
 userdata = jQuery.parseJSON(userdata1);
 $('#homedata > label').html("Welcome home "+userdata['Display_Name']+" !!");
@@ -343,6 +466,7 @@ $.ajax({
   url: 'server/userdata.php',
   success: function(userdata) {
     sethome_user(userdata);
+	getjson();
   }
 });
 $('.datas').css({'display':'none'});

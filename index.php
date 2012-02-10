@@ -14,6 +14,8 @@ if($userId==-1) {
 <title>Dalal Street 2012</title>
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script type="text/javascript" src="scripts/main.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.17.custom.min.js"></script>
 <link rel="shortcut icon" href="images/favicon.ico" >
 <link href="styles/main.css" rel="stylesheet"></link>
