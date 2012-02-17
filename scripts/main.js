@@ -1,3 +1,47 @@
+var selectedCompanyId = "";
+var COMPANY_SYNC_TIME = 60*1000;
+var LOCAL_COMPANY_CACHE = Object();
+
+function putCompanyData(company) {
+    LOCAL_COMPANY_CACHE[company['stockId']] = company;
+    $('#market_bg > label').html("<b>"+company['name']+"</b>");
+    $('#company_details').find('.market_price').html(company['marketValue']);
+    $('#company_details').find('.exchange_price').html(company['exchangePrice']);
+    $('#company_details').find('.last_trade').html(company['lastTrade']);
+    $('#company_details').find('.day_low').html(company['dayLow']);
+    $('#company_details').find('.day_high').html(company['dayHigh']);
+    $('#company_details').find('.shares_issued').html(company['numIssued']);
+    $('#company_details').find('.in_exchange').html(company['sharesInExchange']);
+}
+
+function putCompanyListData(companies) {
+    LOCAL_COMPANY_CACHE = companies;
+    var htmlData = "<tr title=\"sort\"><td>Company Name</td><td>Share Rate</td></tr>";
+    for(key in companies) { 
+        htmlData += "<tr><td>"+companies[key]['name']+"<input type=hidden value='"+companies[key]['stockId']+"'/></td><td>"+companies[key]['marketValue']+"</td></tr>";
+    } 
+    $("#list_table > tbody").html(htmlData);
+    $("#list_table > tbody > tr > td:first-child").click(function() {
+        var stockId = $(this).children("input").val();
+        if($(this).innerHTML!="Company Name") {
+            if(!LOCAL_COMPANY_CACHE[stockId]) {
+                $.post('server/stockdata.php?stockId='+stockId,{},function(data) { putCompanyData(data); },"json");
+            } else {
+                putCompanyData(LOCAL_COMPANY_CACHE[stockId]);
+            }
+        }
+    });
+}
+    
+function refreshCompanyList() {
+    $.post('server/stockdata.php',{},function(data) { putCompanyListData(data); },"json");
+}
+
+function companyListSync() {
+    refreshCompanyList();
+    setTimeout(companyListSync,COMPANY_SYNC_TIME);
+}
+
 $(function(){
 
 
@@ -329,6 +373,8 @@ $('#tradedata > #but_sell').click(function(){
 });
 var ref_x;
 function setmarket_stockbox(){
+    refreshCompanyList();
+    return;
 $.ajax({
   url: 'server/stockdata.php',
   success: function(stockdata1) {

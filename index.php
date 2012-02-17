@@ -112,7 +112,26 @@ $(function() {
 <div id="content_header">
 <div id="content_header_inner">MARKET</div>
 </div>
-<div id="market_bg"><label><b>Click a company on the list . . .</b></label><div id="company_details"></div></div>
+<div id="market_bg"><label><b>Click a company on the list . . .</b></label><div id="company_details">
+<table>
+<tr>
+<td>Current Market Price:<div class="market_price"></div></td>
+<td>Exchange Price:<div class="exchange_price"></div></td>
+</tr>
+<tr>
+<td>Shares Issued:<div class="shares_issued"></div></td>
+<td>Shares In Exchange:<div class="in_exchange"></div></td>
+</tr>
+<tr>
+<td>Last Traded Value:<div class="last_trade"></div></td>
+<td></td>
+</tr>
+<tr>
+<td>Day High Value:<div class="day_high"></div></td>
+<td>Day Low Value:<div class="day_low"></div></td>
+</tr>
+</table>
+</div></div>
 <input type="text" class="valuebox" id="in_buyshares">
 <br />
 <input type="button" class="but" disabled=false id="but_buy">
