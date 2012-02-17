@@ -120,7 +120,10 @@ if(rankdata[x]["userId"]==userid)
 }
 function yuigraphs(yuigraph,m,n)
 		{
-				n1=parseInt(n)+500
+		    alert(yuigraph);
+		    alert(m);
+		    alert(n);
+				n1=parseInt(n)+100
 				YUI().use('charts',function(Y){
 				 var styleDef = {
         axes:{
@@ -142,24 +145,24 @@ function yuigraphs(yuigraph,m,n)
 			marker:{
 				
 				 fill:{
-                            color:"#FFC125"
+                            color:"#FFFF00"
                         },
                         border:{
-                            color:"#999"
+                            color:"#FFFF00"
                         },
                         over:{
                             fill:{
                                 color:"#FFFF00"
                             },
                             border:{
-                                color:"#FFA500"
+                                color:"#FFFF00"
                             },
                             width: 12,
                             height: 12
                         }
                     },
                     line:{
-                        color:"#FF3030"
+                        color:"#0000FF"
                     },			
 			}
 			}
@@ -222,23 +225,27 @@ function yuigraphs(yuigraph,m,n)
 				var key4=key1.substring(6,key1.length);
 				var key5=parseInt(key2)*3600+parseInt(key3)*60+parseInt(key4)*/
 				arr[0][j]=key1;
-				arr[1][j]=value;
+				var a_yui=parseInt(value*100);
+				var b_yui=parseFloat(a_yui/100);
+				var temp_yui=b_yui.toFixed(2);
+	   
+				    arr[1][j]=temp_yui;
 				if(k1==0)
 				{
-					m=value
-					n=value
+				    m=parseInt(temp_yui);
+				    n=parseInt(temp_yui);
 					k1=1
 				}
 				else
 				{
 				if(value < m)
-					m=value
+				    m=parseInt(temp_yui);
 				if(value > n)
-					n=value
+				    n=parseInt(temp_yui);
 				}
 				j=j+1;
 			});
-		//		alert(yuigraph);
+			//	alert(yuigraph);
 			yuigraphs(arr,m,n);	
 		});
 		}
