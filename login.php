@@ -1,3 +1,8 @@
+<?php
+require_once("server/users.php");
+$userId = getLoggedInUserId();
+if($userId!=-1) header("Location: index.php");
+?>
 <html>
 <head><title>Login</title></head>
 <style type="text/css">
@@ -19,33 +24,27 @@ left:740px;
 top:25px;
 cursor:pointer;
 }
-#login_but.loggedin {
-background: #FFFFFF;
-}
 </style>
 <body>
 <div id='login_container'>
 <?php
-require_once("server/users.php");
 
 session_start();
-echo json_encode($_SESSION);
 if(isset($_SESSION['message'])) {
-    echo $_SESSION['message'] . "<br/>";
+    $message = $_SESSION['message'];
     unset($_SESSION['message']);
 }
 if(isset($_SESSION['error'])) {
-    echo $_SESSION['error'] . "<br/>";
+    $message = $_SESSION['error'];
     unset($_SESSION['error']);
 }
-$userId = getLoggedInUserId();
-if($userId==-1) {
-    echo "<a href='./server/fbauth.php'><div id='login_but'></div></a>";
-} else {
-$userName = getLoggedInUserName();
-    echo "<div id='login_but' class='loggedin'>You're logged in as {$userName}<br/>Click <a href='./index.php'>here</a> to go to application</div>";
+if($message!="") {
+?>
+<script type="text/javascript"> alert('<?php echo $message; ?>'); </script>
+<?php
 }
 ?>
+<a href='./server/fbauth.php'><div id='login_but'></div></a>
 </div>
 </body>
 </html>
