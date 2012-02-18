@@ -211,6 +211,9 @@ $(function() {
 <div id="graph_container">
 <div id="statistics_header">
 <div id="stat_header_inner">STATISTICS</div>
+<div id="yuigraph-container">
+
+</div>
 </div>
 </div>
 </div>

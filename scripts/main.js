@@ -1,6 +1,15 @@
 var selectedCompanyId = "";
 var COMPANY_SYNC_TIME = 60*1000;
 var LOCAL_COMPANY_CACHE = Object();
+var LOCAL_USER_CACHE = Object();
+
+function getMarketValue(stockId) {
+    return LOCAL_COMPANY_CACHE[stockId]['marketValue'];
+}
+
+function getStockName(stockId) {
+    return LOCAL_COMPANY_CACHE[stockId]['name'];
+}
 
 function putCompanyData(company) {
     LOCAL_COMPANY_CACHE[company['stockId']] = company;
@@ -40,6 +49,29 @@ function refreshCompanyList() {
 function companyListSync() {
     refreshCompanyList();
     setTimeout(companyListSync,COMPANY_SYNC_TIME);
+}
+
+function putHomeData(user) {
+    LOCAL_USER_CACHE = user;
+    $('#cashinhand').html(user['cashInHand']);
+    $('#yourrank').html(user['rank']);
+    var totalWorth = parseFloat(user['cashInHand']);
+    var stock_tbody = "<tr title=\"sort\"><td>Company Name</td><td>Shares</td></tr>";
+    for(stockId in user['stocks']) {
+        totalWorth += getMarketValue(stockId)*parseFloat(user['stocks'][stockId]);
+        stock_tbody += "<tr><td>"+getStockName(stockId)+"</td><td>"+user['stocks'][stockId]+"</td></tr>";
+    }
+    $('#home_stock > #stock_table > tbody').html(stock_tbody);
+    $('#networth').html(totalWorth.toFixed(2));
+}
+
+function refreshHome() {
+    $.post('server/userdata.php',{},function(data) { putHomeData(data); },"json");
+}
+
+function homeSync() {
+    refreshHome();
+    setTimeout(homeSync,HOME_SYNC_TIME);
 }
 
 $(function(){
@@ -235,7 +267,7 @@ function yuigraphs(yuigraph,m,n)
 				tooltip: myTooltip,
 //				categoryKey:"date", 
 //				categoryType:"time",
-				render: "#graph_container"
+				render: "#yuigraph-container"
 				})
 	//			mytimeaxis=mychart.getAxisByKey("category");
 		//		mytimeaxis.set("labelFunctionScope",mychart);
@@ -250,7 +282,7 @@ function yuigraphs(yuigraph,m,n)
 				});
 		}
 		function getjson()
-		{	var container=document.getElementById("graph_container");
+		{	var container=document.getElementById("yuigraph-container");
 			container.innerHTML='';
 		    $.getJSON("server/userdata.php", function(json){
 			console.log(json.graph);
@@ -515,13 +547,15 @@ $('#but_mortgage').click(function(){
 });
 
 $('#icon_home').click(function(){
-$.ajax({
+/*$.ajax({
   url: 'server/userdata.php',
   success: function(userdata) {
     sethome_user(userdata);
 	getjson();
   }
-});
+});*/
+alert("something");
+refreshHome();
 $('.datas').css({'display':'none'});
 $('#homedata').css({'display':'block'});
 });
