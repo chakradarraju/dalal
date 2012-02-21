@@ -2,6 +2,7 @@
 
 require_once("users.php");
 require_once("stock.php");
+require_once("common.php");
 
 $userId = getLoggedInUserId();
 if($userId==-1) { //If not logged in
@@ -76,8 +77,15 @@ INSERT INTO `users_data`
     WHERE NOT EXISTS (
         SELECT * FROM `users_data` WHERE `userId` = '{$user['userId']}' AND `key` = 'graph_point' AND `time` > NOW() - INTERVAL {$interval}
     ) LIMIT 1;
+INSERT INTO `users_data`
+    SELECT '{$user['userId']}', NOW(), 'rank','{$user['rank']}' FROM `users`
+    WHERE NOT EXISTS (
+        SELECT * FROM `users_data` WHERE `userId` = '{$user['userId']}' AND `key` = 'rank'
+    ) LIMIT 1;
+UPDATE `users_data` SET `value` = '{$user['rank']}' WHERE `userId` = '{$user['userId']}' AND `key` = 'rank';
 QUERY;
-            mysql_query($query);
+            $failed = runQueries($query);
+            if($failed) die(json_encode(array("error" => "Database error")));
         }
         mysql_query("INSERT INTO `misc_data` VALUES(NULL,'ranklist','{$ranklistText}')");
         echo $ranklistText;
