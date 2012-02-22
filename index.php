@@ -115,26 +115,26 @@ $(function() {
 <div id="market_bg"><label><b>Click a company on the list . . .</b></label><div id="company_details">
 <table>
 <tr>
-<td>Current Market Price:<div class="market_price"></div></td>
-<td>Exchange Price:<div class="exchange_price"></div></td>
+<td>Current Market Price:<span class="market_price"></span></td>
+<td>Exchange Price:<span class="exchange_price"></span></td>
 </tr>
 <tr>
-<td>Shares Issued:<div class="shares_issued"></div></td>
-<td>Shares In Exchange:<div class="in_exchange"></div></td>
+<td>Shares Issued:<span class="shares_issued"></span></td>
+<td>Shares In Exchange:<span class="in_exchange"></span></td>
 </tr>
 <tr>
-<td>Last Traded Value:<div class="last_trade"></div></td>
+<td>Last Traded Value:<span class="last_trade"></span></td>
 <td></td>
 </tr>
 <tr>
-<td>Day High Value:<div class="day_high"></div></td>
-<td>Day Low Value:<div class="day_low"></div></td>
+<td>Day High Value:<span class="day_high"></span></td>
+<td>Day Low Value:<span class="day_low"></span></td>
 </tr>
 </table>
 </div></div>
 <input type="text" class="valuebox" id="in_buyshares">
 <br />
-<input type="button" class="but" disabled=false id="but_buy">
+<input type="button" class="but" id="but_buy">
 </div>
 <div class="datas" id="tradedata">
 <div id="content_header">
@@ -147,7 +147,7 @@ $(function() {
 </tbody>
 </table>
 </div>
-<div id="trade_company">Select Company : <select></select></div>
+<div id="trade_company">Selected Company : <span id="selectedCompany1"></span> </div>
 <input type="text" class="valuebox" id="in_setquote"><br />
 <input type="text" class="valuebox" id="in_setnumber"><br />
 <input type="button" class="but" id="but_buy">
@@ -175,7 +175,7 @@ $(function() {
 </tbody>
 </table>
 </div>
-<div id="mortgage_company">Select Company : <select></select><label id="mortgage_max">Maximum Value : NA<label></div>
+<div id="mortgage_company">Selected Company : <span id="selectedCompany2"></span> <label id="mortgage_max"></label></div>
 <input type="text" class="valuebox" id="in_setnumber"><br />
 <input type="text" class="valuebox" id="in_quote_value"><br />
 <input type="button" class="but" id="but_mortgage">

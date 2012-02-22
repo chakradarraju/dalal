@@ -48,6 +48,9 @@ if($stockId=="Index") {
         $stock = $row;
         $stock['graph'] = $values;
     }
+/*    $result = mysql_query("SELECT NOW() AS 'now' FROM `users`");
+    $row = mysql_fetch_assoc($result);
+    $stock['graph'][$row['now']] = */
     echo json_encode($stock);
 }
 

@@ -1,7 +1,10 @@
-var selectedCompanyId = "";
-var COMPANY_SYNC_TIME = 60*1000;
+var selectedStockId = 0;
+var COMPANY_SYNC_TIME = 5*1000;
+var USER_SYNC_TIME = 5*1000;
 var LOCAL_COMPANY_CACHE = Object();
 var LOCAL_USER_CACHE = Object();
+var LOCAL_COMPANY_CACHE_TIME = 0;
+var LOCAL_USER_CACHE_TIME = 0;
 
 function getMarketValue(stockId) {
     return LOCAL_COMPANY_CACHE[stockId]['marketValue'];
@@ -9,6 +12,14 @@ function getMarketValue(stockId) {
 
 function getStockName(stockId) {
     return LOCAL_COMPANY_CACHE[stockId]['name'];
+}
+
+function getCompaniesData() {
+    return LOCAL_COMPANY_CACHE;
+}
+
+function getUserData() {
+    return LOCAL_USER_CACHE;
 }
 
 function putCompanyData(company) {
@@ -23,6 +34,20 @@ function putCompanyData(company) {
     $('#company_details').find('.in_exchange').html(company['sharesInExchange']);
 }
 
+function selectCompany(company) {
+    console.log(company);
+    putCompanyData(company);
+    $("#selectedCompany1").html(company['name']);
+    $("#selectedCompany2").html(company['name']);
+    $("#mortgage_max").html("");
+//    putGraph(company.graph);
+    console.log(company);
+    var url = 'server/stockdata.php?stockId='+company['stockId'];
+    console.log(url);
+    getjson(url);
+    selectedStockId = company['stockId'];
+}
+
 function putCompanyListData(companies) {
     LOCAL_COMPANY_CACHE = companies;
     var htmlData = "<tr title=\"sort\"><td>Company Name</td><td>Share Rate</td></tr>";
@@ -34,9 +59,9 @@ function putCompanyListData(companies) {
         var stockId = $(this).children("input").val();
         if($(this).innerHTML!="Company Name") {
             if(!LOCAL_COMPANY_CACHE[stockId]) {
-                $.post('server/stockdata.php?stockId='+stockId,{},function(data) { putCompanyData(data); },"json");
+                $.post('server/stockdata.php?stockId='+stockId,{},function(data) { selectCompany(data); },"json");
             } else {
-                putCompanyData(LOCAL_COMPANY_CACHE[stockId]);
+                selectCompany(LOCAL_COMPANY_CACHE[stockId]);
             }
         }
     });
@@ -71,14 +96,224 @@ function refreshHome() {
 
 function homeSync() {
     refreshHome();
-    setTimeout(homeSync,HOME_SYNC_TIME);
+    setTimeout(homeSync,USER_SYNC_TIME);
+}
+
+function putQueueData(queuedata) {
+    stock_tbody="<tr title=\"sort\"><td>Company Name</td><td>Shares</td><td>Quote</td><td>Request</td><td>Cancel</td></tr>";
+    for(var x in queuedata) {
+        stock_tbody += "<tr><td class=\""+queuedata[x][queuedata[x]["type"]+"Id"]+"\">"+getStockName(queuedata[x]["stockId"])+"</td><td>"+queuedata[x]["num"]+"</td><td>"+queuedata[x]["value"]+"</td><td>"+queuedata[x]["type"]+"</td><td><div class=\"trade_closer\"></div></td></tr>";
+    }
+    $("#trade_stock > #stock_table > tbody").html(stock_tbody);
+    $('.trade_closer').click(function() {
+        comp_tr = $(this).parent().parent();
+        comp_td = $(comp_tr).find('td');
+        $.post("server/trade.php", { cancelOrder: "", type: $(comp_td[3]).html(), orderId: $(comp_td[0]).attr('class') }, function(response) { alert(response['message']); refreshQueue(); },"json");
+    });
+}
+
+function refreshQueue() {
+    $.post('server/trade.php',{},function(queuedata) { putQueueData(queuedata); },"json");
+}
+
+function putRanklist(ranklist) {
+    rank_table = "<tr><td>Rank</td><td>Names</td><td>Net Worth</td></tr>";
+    for(x in ranklist){
+        rank_table+="<tr><td>"+ranklist[x]['rank']+"</td><td>"+ranklist[x]['Display_Name']+"</td><td>"+ranklist[x]['totalWorth']+"</td></tr>";
+    }
+    $('#ranktable_outer > #rank_table > tbody').html(rank_table);
+}
+
+function refreshRanking() {
+    $.post('server/userdata.php?getDetail=ranklist', {}, function(ranklist) { putRanklist(ranklist); }, "json");
+}
+
+function putBankList(banklist) {
+    stock_tbody = "<tr title=\"sort\"><td>Company Name</td><td>Shares</td><td>Net value</td><td>(take back?)</td></td>";
+    for(var x in banklist) {
+        stock_tbody += "<tr><td class=\""+banklist[x]["mortgageId"]+"\">"+getStockName(banklist[x]["stockId"])+"</td><td>"+banklist[x]["number"]+"</td><td>"+banklist[x]["loanValue"]+"</td><td><div class=\"bank_closer\"></div></td></tr>";
+    }
+    $("#bank_stock > #stock_table > tbody").html(stock_tbody);
+    $('.bank_closer').click(function() {
+        comp_tr = $(this).parent().parent();
+        comp_td = $(comp_tr).find('td');
+        $.post('server/bankdata.php', { recover: "", mortgageId: $(comp_td[0]).attr('class')}, function(response) { alert(response['message']); refreshBanklist(); });
+    });
+}
+
+function refreshBanklist() {
+    $.post('server/bankdata.php', {}, function(banklist) { putBankList(banklist); }, "json");
+}
+
+		function getjson(url)
+		{	var container=document.getElementById("yuigraph-container");
+			container.innerHTML='';
+		    $.getJSON(url, function(json){
+			console.log(json.graph);
+			var yuigraph = JSON.stringify(json.graph);
+			var j = 0;
+			 var arr = [];
+			for (var i=0;i<2;i++) {
+			arr[i] = [];
+  }
+			k1=0
+			var data=$.parseJSON(yuigraph);
+			$.each(data, function(key, value) {
+				var key1=key.substring(11,key.length)
+				/*var key2=key1.substring(0,2)
+				var key3=key1.substring(3,5);
+				var key4=key1.substring(6,key1.length);
+				var key5=parseInt(key2)*3600+parseInt(key3)*60+parseInt(key4)*/
+				arr[0][j]=key1;
+				var a_yui=parseInt(value*100);
+				var b_yui=parseFloat(a_yui/100);
+				var temp_yui=b_yui.toFixed(2);
+	   
+				    arr[1][j]=temp_yui;
+				if(k1==0)
+				{
+				    m=parseInt(temp_yui);
+				    n=parseInt(temp_yui);
+					k1=1
+				}
+				else
+				{
+				if(value < m)
+				    m=parseInt(temp_yui);
+				if(value > n)
+				    n=parseInt(temp_yui);
+				}
+				j=j+1;
+			});
+			//	alert(yuigraph);
+			yuigraphs(arr,m,n);	
+		});
+		}
+
+
+function yuigraphs(yuigraph,m,n)
+		{
+/*		    alert(yuigraph);
+		    alert(m);
+		    alert(n);*/
+				n1=parseInt(n)+100
+				YUI().use('charts',function(Y){
+				 var styleDef = {
+        axes:{
+            category:{
+                label:{
+                    rotation:-45,
+                    color: "#000"
+                }
+			},
+			values:{
+			type:"numeric",
+			label:{
+				color: "#000"
+			}
+			}
+				},
+		series:{
+			series1:{
+			marker:{
+				
+				 fill:{
+                            color:"#FFFF00"
+                        },
+                        border:{
+                            color:"#FFFF00"
+                        },
+                        over:{
+                            fill:{
+                                color:"#FFFF00"
+                            },
+                            border:{
+                                color:"#FFFF00"
+                            },
+                            width: 12,
+                            height: 12
+                        }
+                    },
+                    line:{
+                        color:"#0000FF"
+                    },			
+			}
+			}
+		};
+			var myTooltip = {
+            styles: { 
+                backgroundColor: "#333",
+                color: "#eee",
+                borderColor: "#fff",
+                textAlign: "center"
+            },
+            markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex)
+            {
+                var msg = "<span>" + "value" + " at " + 
+                categoryItem.axis.get("labelFunction").apply(this, [categoryItem.value, categoryItem.axis.get("labelFormat")]) + 
+                "</span><br/><div>" + valueItem.axis.get("labelFunction").apply(this, [valueItem.value, {prefix:"$", decimalPlaces:2}]) + "</div>";
+             
+			 return msg; 
+            }
+        };
+				var mychart= new Y.Chart({
+				dataProvider: yuigraph,
+				styles: styleDef,
+				horizontalGridlines:true, 
+                verticalGridlines:true,
+				tooltip: myTooltip,
+//				categoryKey:"date", 
+//				categoryType:"time",
+				render: "#yuigraph-container"
+				})
+	//			mytimeaxis=mychart.getAxisByKey("category");
+		//		mytimeaxis.set("labelFunctionScope",mychart);
+	
+				mynumericaxis = mychart.getAxisByKey("values");
+				mynumericaxis.set("labelFunctionScope", mychart);
+				mynumericaxis.set("minimum",m-500);
+				mynumericaxis.set("maximum",n1);
+				//mynumericaxis.set("categoryAxisName","value");
+				mynumericaxis._drawAxis();
+				;	
+				});
+		}
+
+function putGraph(graph) {
+    var container = document.getElementById("graph_container");
+    container.innerHTML = "";
+    var arr = [];
+    for (var i=0;i<2;i++) arr[i] = [];
+    k1 = 0;
+    var data = graph;
+    var j = 0;
+    $.each(data,function(key,value) {
+        var key1 = key.substring(11,key.length);
+        arr[0][j] = key1;
+//        var temp_yui = parseFloat(value).toFixed(2);
+        var a_yui = parseInt(value*100);
+        var b_yui = parseInt(a_yui/100);
+        var temp_yui = b_yui.toFixed(2);
+        arr[1][j] = temp_yui;
+        if(k1==0) {
+            m = temp_yui;
+            n = temp_yui;
+            k1 = 1;
+        } else {
+            if(value < m) m = temp_yui;
+            if(value > n) n = temp_yui;
+        }
+        j = j+1;
+    });
+    yuigraphs(arr,m,n);
 }
 
 $(function(){
-
-
-$('#list_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
-$('#stock_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
+companyListSync();
+homeSync();
+$('#homedata').show();
+//$('#list_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
+//$('#stock_table > tbody > tr:odd').css({'background-color':'#b5d2eb'});
 up=1;
 upsize = $('#updates_inner > label').size()+1;
 function update_next(){
@@ -194,137 +429,6 @@ if(rankdata[x]["userId"]==userid)
 	$('#yourrank').html(rankdata[x]["rank"]);
 }
 }
-function yuigraphs(yuigraph,m,n)
-		{
-		    alert(yuigraph);
-		    alert(m);
-		    alert(n);
-				n1=parseInt(n)+100
-				YUI().use('charts',function(Y){
-				 var styleDef = {
-        axes:{
-            category:{
-                label:{
-                    rotation:-45,
-                    color: "#000"
-                }
-			},
-			values:{
-			type:"numeric",
-			label:{
-				color: "#000"
-			}
-			}
-				},
-		series:{
-			series1:{
-			marker:{
-				
-				 fill:{
-                            color:"#FFFF00"
-                        },
-                        border:{
-                            color:"#FFFF00"
-                        },
-                        over:{
-                            fill:{
-                                color:"#FFFF00"
-                            },
-                            border:{
-                                color:"#FFFF00"
-                            },
-                            width: 12,
-                            height: 12
-                        }
-                    },
-                    line:{
-                        color:"#0000FF"
-                    },			
-			}
-			}
-		};
-			var myTooltip = {
-            styles: { 
-                backgroundColor: "#333",
-                color: "#eee",
-                borderColor: "#fff",
-                textAlign: "center"
-            },
-            markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex)
-            {
-                var msg = "<span>" + "value" + " at " + 
-                categoryItem.axis.get("labelFunction").apply(this, [categoryItem.value, categoryItem.axis.get("labelFormat")]) + 
-                "</span><br/><div>" + valueItem.axis.get("labelFunction").apply(this, [valueItem.value, {prefix:"$", decimalPlaces:2}]) + "</div>";
-             
-			 return msg; 
-            }
-        };
-				var mychart= new Y.Chart({
-				dataProvider: yuigraph,
-				styles: styleDef,
-				horizontalGridlines:true, 
-                verticalGridlines:true,
-				tooltip: myTooltip,
-//				categoryKey:"date", 
-//				categoryType:"time",
-				render: "#yuigraph-container"
-				})
-	//			mytimeaxis=mychart.getAxisByKey("category");
-		//		mytimeaxis.set("labelFunctionScope",mychart);
-	
-				mynumericaxis = mychart.getAxisByKey("values");
-				mynumericaxis.set("labelFunctionScope", mychart);
-				mynumericaxis.set("minimum",m-500);
-				mynumericaxis.set("maximum",n1);
-				//mynumericaxis.set("categoryAxisName","value");
-				mynumericaxis._drawAxis();
-				;	
-				});
-		}
-		function getjson()
-		{	var container=document.getElementById("yuigraph-container");
-			container.innerHTML='';
-		    $.getJSON("server/userdata.php", function(json){
-			console.log(json.graph);
-			var yuigraph = JSON.stringify(json.graph);
-			var j = 0;
-			 var arr = [];
-			for (var i=0;i<2;i++) {
-			arr[i] = [];
-  }
-			k1=0
-			var data=$.parseJSON(yuigraph);
-			$.each(data, function(key, value) {
-				var key1=key.substring(11,key.length)
-				/*var key2=key1.substring(0,2)
-				var key3=key1.substring(3,5);
-				var key4=key1.substring(6,key1.length);
-				var key5=parseInt(key2)*3600+parseInt(key3)*60+parseInt(key4)*/
-				arr[0][j]=key1;
-				var a_yui=parseInt(value*100);
-				var b_yui=parseFloat(a_yui/100);
-				var temp_yui=b_yui.toFixed(2);
-	   
-				    arr[1][j]=temp_yui;
-				if(k1==0)
-				{
-				    m=parseInt(temp_yui);
-				    n=parseInt(temp_yui);
-					k1=1
-				}
-				else
-				{
-				if(value < m)
-				    m=parseInt(temp_yui);
-				if(value > n)
-				    n=parseInt(temp_yui);
-				}
-				j=j+1;
-			});
-			//	alert(yuigraph);
-			yuigraphs(arr,m,n);	
-		});
-		}
 function sethome_user(userdata1){
 userdata = jQuery.parseJSON(userdata1);
 $('#homedata > label').html("Welcome home "+userdata['Display_Name']+" !!");
@@ -372,37 +476,13 @@ $('#trade_stock > #stock_table > tbody > tr:odd').css({'background-color':'#b5d2
 }
 
 $('#tradedata > #but_buy').click(function(){
-	$.post("server/trade.php", { trade: "buy", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
-	function(data) {
-		alert(data);
-		$.ajax({
-			url: 'server/stockdata.php',
-			success: function(stockdata) {
-				$.post("server/trade.php",{},
-				function(queuedata) {
-				refresh_tradestock(stockdata,queuedata);
-				});
-			}
-			});
-		}
-	);
+	$.post("server/trade.php", { trade: "buy", shareId: selectedStockId, number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')}, function(data) { alert(data['message']); refreshQueue(); }, "json");
 });
 
 $('#tradedata > #but_sell').click(function(){
-	$.post("server/trade.php", { trade: "sell", shareId: $('#trade_company > select option:selected').attr('value'), number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')},
-	function(data) {
-		alert(data);
-		$.ajax({
-			url: 'server/stockdata.php',
-			success: function(stockdata) {
-				$.post("server/trade.php",{},
-				function(queuedata) {
-				refresh_tradestock(stockdata,queuedata);
-				});
-			}
-			});
-		});
+	$.post("server/trade.php", { trade: "sell", shareId: selectedStockId, number: $('#tradedata > #in_setnumber').attr('value'), rate: $('#tradedata > #in_setquote').attr('value')}, function(data) { alert(data['message']); refreshQueue(); }, "json");
 });
+
 var ref_x;
 function setmarket_stockbox(){
     refreshCompanyList();
@@ -423,7 +503,7 @@ $.ajax({
   $.ajax({
   url: 'server/stockdata.php',
   success: function(stockdata1) {
-  $('#marketdata > #but_buy').attr('disabled','disabled');
+//  $('#marketdata > #but_buy').attr('disabled','disabled');
   //alert(stockdata1);
   stockdata = jQuery.parseJSON(stockdata1);
   for(x in stockdata){
@@ -446,7 +526,8 @@ $.ajax({
 }
 
 $('#marketdata > #but_buy').click(function(){
-			$.post("server/trade.php", { buyFromExchange: "true", shareId: stockdata[ref_x]["stockId"], number: $('#marketdata > #in_buyshares').attr('value')},
+        alert('buying');
+			$.post("server/trade.php", { buyFromExchange: "true", shareId: selectedStockId, number: $('#marketdata > #in_buyshares').attr('value')},
 			function(data) {
 				alert(data);
 			});
@@ -498,8 +579,13 @@ $.ajax({
  });
 }
 
-$('#bankdata > #in_setnumber').blur(function(){
-$.ajax({
+$('#bankdata > #in_setnumber').keyup(function(){
+    str = $('#bankdata > #in_setnumber').attr('value');
+    if(str!="") num = parseInt(str);
+    else num = 0;
+    max = parseFloat(0.75 * getMarketValue(selectedStockId) * num).toFixed(2);
+    $('#bankdata > #mortgage_company > #mortgage_max').html('Maximum Value : '+max);
+/*$.ajax({
 	url:'server/stockdata.php',
 	success:function(stockdata){
 		stockdata = jQuery.parseJSON(stockdata);
@@ -508,7 +594,7 @@ $.ajax({
 		$('#bankdata > #mortgage_company > #mortgage_max').html('Maximum Value : '+max);
 		
 	}
-});
+});*/
 });
 
 function refresh_bankstock(banklist1){
@@ -536,14 +622,7 @@ function(data) {
 }
 
 $('#but_mortgage').click(function(){
-	$.post("server/bankdata.php", { mortgage: "", stockId: $('#mortgage_company > select option:selected').attr('value'), number: $('#bankdata > #in_setnumber').attr('value'), value: $('#bankdata > #in_quote_value').attr('value')},
-	function(data) {
-		alert(data);
-		$.post("server/bankdata.php", {},
-			function(banklist) {
-				refresh_bankstock(banklist);
-				});
-			});
+	$.post("server/bankdata.php", { mortgage: "", stockId: selectedStockId, number: $('#bankdata > #in_setnumber').attr('value'), value: $('#bankdata > #in_quote_value').attr('value')}, function(data) { alert(data['message']); refreshBanklist(); }, "json");
 });
 
 $('#icon_home').click(function(){
@@ -554,28 +633,32 @@ $('#icon_home').click(function(){
 	getjson();
   }
 });*/
-alert("something");
-refreshHome();
+//refreshHome();
 $('.datas').css({'display':'none'});
 $('#homedata').css({'display':'block'});
+//putGraph(getUserData().graph);
+getjson('server/userdata.php');
 });
 $('#icon_market').click(function(){
-setmarket_stockbox();
+//setmarket_stockbox();
 $('.datas').css({'display':'none'});
 $('#marketdata').css({'display':'block'});
 });
 $('#icon_trade').click(function(){
-settrade();
+//settrade();
+refreshQueue();
 $('.datas').css({'display':'none'});
 $('#tradedata').css({'display':'block'});
 });
 $('#icon_ranking').click(function(){
-setranking();
+//setranking();
+refreshRanking();
 $('.datas').css({'display':'none'});
 $('#rankdata').css({'display':'block'});
 });
 $('#icon_bank').click(function(){
-setbank();
+//setbank();
+refreshBanklist();
 $('.datas').css({'display':'none'});
 $('#bankdata').css({'display':'block'});
 });

@@ -421,6 +421,10 @@ cursor:pointer;
 position:relative;
 top:80px;
 }
+#company_details > table{
+margin-left:100px;
+font-size:10px;
+}
 #marketdata > #but_buy{
 left:250px;
 position:relative;

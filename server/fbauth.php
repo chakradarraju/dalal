@@ -91,6 +91,7 @@ if(isset($_GET['code'])) {
         $_SESSION['message'] = "Something went wrong";
         header("Location: ../index.php");
     }
+    header("Location: ../index.php");
 } else {
     $_SESSION['state'] = md5(uniqid(rand(), TRUE));
     echo("<script> top.location.href='http://www.facebook.com/dialog/oauth?client_id=$appId&redirect_uri=" . urlencode($myURL) . "&state={$_SESSION['state']}&scope=read_stream' </script>");
