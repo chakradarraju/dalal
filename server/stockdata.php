@@ -36,6 +36,7 @@ if($stockId=="Index") {
         if($values[$rowStockId]) $graph = $values[$rowStockId];
         else $graph = array();
         $stocks[$rowStockId]['graph'] = $graph;
+        $stocks[$rowStockId]['graph'][date('Y-m-d H:i:s',time()-14*60*60)] = $row['marketValue'];
     }
     echo json_encode($stocks);
 } else {
@@ -48,9 +49,9 @@ if($stockId=="Index") {
         $stock = $row;
         $stock['graph'] = $values;
     }
-/*    $result = mysql_query("SELECT NOW() AS 'now' FROM `users`");
+    $result = mysql_query("SELECT `marketValue` FROM `stocks` WHERE `stockId` = '{$stockId}'");
     $row = mysql_fetch_assoc($result);
-    $stock['graph'][$row['now']] = */
+    $stock['graph'][date('Y-m-d H:i:s',time()-14*60*60)] = $row['marketValue'];
     echo json_encode($stock);
 }
 

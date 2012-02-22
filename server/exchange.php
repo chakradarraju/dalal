@@ -135,16 +135,11 @@ UPDATE `users_data` SET `value` = `value` - '{$num}' WHERE `userId` = '{$fromId}
 UPDATE `users_data` SET `value` = `value` + '{$num}' WHERE `userId` = '{$toId}' AND `key` = '{$stockId}';
 UPDATE `stocks` SET `lastTrade` = ROUND('{$value}',2), `marketValue` = ROUND(`marketValue` + ({$value}-`marketValue`)*{$num}/`numIssued`,2), `dayLow` = ROUND(LEAST(`dayLow`,{$value}),2), `dayHigh` = ROUND(GREATEST(`dayHigh`,{$value}),2) WHERE `stockId` = '{$stockId}';
 INSERT INTO `log` VALUES(NULL,'{$fromId}','{$toId}','{$stockId}','{$num}',ROUND('{$value}',2));
-INSERT INTO `misc_data`
-    SELECT NOW(), 'index', ROUND(SUM(`marketValue`*`factor`),2) FROM `stocks`
-    WHERE NOT EXISTS (
-        SELECT * FROM `misc_data` WHERE `key` = 'index' AND `time` > NOW() - INTERVAL {$interval}
-    );
 INSERT INTO `stocks_data`
-    SELECT '{$stockId}', NOW(), 'graph_point', ROUND('{$value}',2) FROM `stocks`
+    SELECT '{$stockId}', NOW(), 'graph_point', `marketValue` FROM `stocks` WHERE `stockId` = '{$stockId}'
     WHERE NOT EXISTS (
         SELECT * FROM `stocks_data` WHERE `stockId` = '{$stockId}' AND `key` = 'graph_point' AND `time` > NOW() - INTERVAL {$interval}
-    ) LIMIT 1;
+    );
 QUERY;
     $failed = runQueries($query);
     if($failed) return -1;
